@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IPS LDP Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Archivo', sans-serif;
+    background: #ebebeb;
+    color: #333;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  #header {
+    background: #000;
+    padding: 0 32px;
+  }
+  #header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 52px;
+  }
+  #header-left { display: flex; align-items: baseline; gap: 14px; }
+  #header-title {
+    font-family: 'Archivo Narrow', sans-serif;
+    font-size: 16px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #fff;
+  }
+  #header-divider {
+    display: inline-block;
+    width: 1px; height: 14px;
+    background: #444; vertical-align: middle;
+  }
+  #header-sub {
+    font-size: 11px; font-weight: 400;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: #666;
+  }
+  #header-ver {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px; color: #444;
+  }
+
+  /* ── Layout ── */
+  #main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 32px 60px;
+    display: grid;
+    grid-template-columns: 1fr 356px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    margin-bottom: 12px;
+  }
+  .card-inner { padding: 0 16px 14px; }
+
+  .rule-thick { border-top: 2px solid #000; }
+  .rule-thin  { border-top: 1px solid #d8d8d8; }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0 7px;
+  }
+  .section-title {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: #000;
+  }
+  .section-right {
+    font-size: 10px; color: #999;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Input grid ── */
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px 16px;
+    padding: 12px 0 2px;
+  }
+  .field-grid.cols2 { grid-template-columns: repeat(2, 1fr); }
+  .field-grid.cols1 { grid-template-columns: 1fr; }
+  .span2 { grid-column: span 2; }
+  .span3 { grid-column: span 3; }
+
+  .field { display: flex; flex-direction: column; gap: 3px; }
+  .field label {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: #555;
+  }
+  .input-wrap {
+    display: flex; align-items: stretch;
+    border: 1px solid #c8c8c8;
+    background: #fff;
+    transition: border-color 0.12s;
+  }
+  .input-wrap:focus-within { border-color: #000; }
+  .input-wrap .pre,
+  .input-wrap .suf {
+    padding: 0 9px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 12px; color: #999;
+    display: flex; align-items: center;
+    flex-shrink: 0;
+  }
+  .input-wrap .pre { border-right: 1px solid #e4e4e4; }
+  .input-wrap .suf { border-left:  1px solid #e4e4e4; }
+  .input-wrap input,
+  .input-wrap select {
+    flex: 1; min-width: 0;
+    padding: 7px 10px;
+    border: none; outline: none;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 13px; color: #111;
+    background: transparent;
+    appearance: none;
+  }
+  .select-wrap {
+    position: relative;
+    border: 1px solid #c8c8c8;
+    background: #fff;
+    transition: border-color 0.12s;
+  }
+  .select-wrap:focus-within { border-color: #000; }
+  .select-wrap select {
+    width: 100%;
+    padding: 7px 32px 7px 10px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 13px; color: #111;
+    background: transparent;
+    border: none; outline: none;
+    appearance: none; cursor: pointer;
+  }
+  .select-arrow {
+    position: absolute; right: 10px; top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #888; font-size: 10px;
+  }
+  .hint {
+    font-size: 10px; color: #aaa;
+    font-style: italic;
+  }
+
+  /* ── LCL toggle ── */
+  #lcl-fields  { display: none; }
+  #fcl-fields  { display: contents; }
+  .show-lcl #lcl-fields { display: contents; }
+  .show-lcl #fcl-fields { display: none; }
+
+  /* ── Results panel ── */
+  #results { display: flex; flex-direction: column; gap: 12px; }
+
+  #ldp-hero {
+    background: #000; color: #fff;
+    padding: 22px 20px 20px;
+  }
+  #ldp-label {
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #555; margin-bottom: 6px;
+  }
+  #ldp-value {
+    font-family: 'Archivo Narrow', sans-serif;
+    font-size: 52px; font-weight: 700;
+    letter-spacing: -0.01em; line-height: 1;
+  }
+  #ldp-divider { height: 1px; background: #282828; margin: 16px 0; }
+  #ldp-meta { width: 100%; border-collapse: collapse; }
+  #ldp-meta td {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 13px; color: #fff;
+    padding-bottom: 5px;
+  }
+  #ldp-meta td:first-child {
+    font-family: 'Archivo', sans-serif;
+    font-size: 10px; color: #555;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #ldp-meta td:last-child { text-align: right; }
+
+  /* ── Breakdown card ── */
+  .result-card {
+    background: #fff;
+    border: 1px solid #d0d0d0;
+  }
+  .result-card-header {
+    padding: 10px 14px 8px;
+    border-bottom: 2px solid #000;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .subhead {
+    padding: 8px 14px 3px;
+    border-top: 1px solid #e8e8e8;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: #aaa;
+  }
+  .subhead:first-of-type { border-top: none; }
+  .data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 5px 14px;
+  }
+  .data-row.shade { background: #f6f6f6; }
+  .data-row.bold  { border-top: 1px solid #000; }
+  .data-row .dr-label {
+    font-family: 'Archivo', sans-serif;
+    font-size: 12px; color: #111;
+  }
+  .data-row .dr-label.indent { padding-left: 12px; }
+  .data-row .dr-label.strong { font-weight: 700; }
+  .data-row .dr-val {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 12px; color: #111;
+  }
+  .data-row.bold .dr-val { font-weight: 700; }
+
+  /* ── Packaging placeholder ── */
+  #pkg-placeholder {
+    background: #fff; border: 1px solid #d0d0d0;
+    padding: 16px 14px;
+    font-size: 11px; color: #bbb; font-style: italic;
+  }
+  #pkg-card { display: none; }
+  #pkg-card.visible { display: block; }
+
+  /* ── Print button ── */
+  #print-btn {
+    display: block; width: 100%;
+    padding: 10px;
+    background: #fff; border: 1px solid #c8c8c8;
+    font-family: 'Archivo', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: #555; cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+  }
+  #print-btn:hover { background: #000; color: #fff; border-color: #000; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    #main { grid-template-columns: 1fr; }
+    #results { order: -1; }
+    .field-grid { grid-template-columns: repeat(2, 1fr); }
+    .span2, .span3 { grid-column: span 2; }
+  }
+  @media (max-width: 540px) {
+    #main { padding: 16px 16px 40px; }
+    #header { padding: 0 16px; }
+    .field-grid { grid-template-columns: 1fr; }
+    .span2, .span3 { grid-column: span 1; }
+  }
+
+  @media print {
+    body { background: #fff; }
+    #header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    #ldp-hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    #print-btn { display: none; }
+    #main { grid-template-columns: 1fr 320px; gap: 12px; padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div id="header">
+  <div id="header-inner">
+    <div id="header-left">
+      <span id="header-title">International Product Solutions</span>
+      <span id="header-divider"></span>
+      <span id="header-sub">LDP Pricing Calculator</span>
+    </div>
+    <span id="header-ver">v1.0</span>
+  </div>
+</div>
+
+<!-- ── Main grid ── -->
+<div id="main">
+
+  <!-- ════ LEFT: INPUTS ════ -->
+  <div id="inputs">
+
+    <!-- Product ID -->
+    <div class="card">
+      <div class="card-inner">
+        <div class="rule-thick"></div>
+        <div class="section-header"><span class="section-title">Product Identification</span></div>
+        <div class="rule-thin"></div>
+        <div class="field-grid">
+          <div class="field">
+            <label>SKU / Item No.</label>
+            <div class="input-wrap"><input type="text" id="sku" placeholder="" /></div>
+          </div>
+          <div class="field span2">
+            <label>Description</label>
+            <div class="input-wrap"><input type="text" id="description" placeholder="" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dimensions -->
+    <div class="card">
+      <div class="card-inner">
+        <div class="rule-thick"></div>
+        <div class="section-header">
+          <span class="section-title">Product Dimensions</span>
+          <span class="section-right">Used for packaging estimator</span>
+        </div>
+        <div class="rule-thin"></div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Length</label>
+            <div class="input-wrap"><input type="number" id="dim_l" step="any" /><span class="suf">in</span></div>
+          </div>
+          <div class="field">
+            <label>Width</label>
+            <div class="input-wrap"><input type="number" id="dim_w" step="any" /><span class="suf">in</span></div>
+          </div>
+          <div class="field">
+            <label>Height</label>
+            <div class="input-wrap"><input type="number" id="dim_h" step="any" /><span class="suf">in</span></div>
+          </div>
+          <div class="field">
+            <label>Unit Weight</label>
+            <div class="input-wrap"><input type="number" id="weight" step="any" /><span class="suf">oz</span></div>
+            <span class="hint">Weight in ounces</span>
+          </div>
+          <div class="field">
+            <label>Units / Inner Pack</label>
+            <div class="input-wrap"><input type="number" id="inner_pack" value="1" step="1" /></div>
+          </div>
+          <div class="field">
+            <label>Order Quantity</label>
+            <div class="input-wrap"><input type="number" id="order_qty" step="1" /></div>
+            <span class="hint">Total units this PO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Origin Costs -->
+    <div class="card">
+      <div class="card-inner">
+        <div class="rule-thick"></div>
+        <div class="section-header"><span class="section-title">Origin Costs</span></div>
+        <div class="rule-thin"></div>
+        <div class="field-grid">
+          <div class="field">
+            <label>FOB Cost / Unit</label>
+            <div class="input-wrap"><span class="pre">$</span><input type="number" id="fob" step="any" /></div>
+          </div>
+          <div class="field">
+            <label>Tooling / Mold Cost</label>
+            <div class="input-wrap"><span class="pre">$</span><input type="number" id="tooling" step="any" /></div>
+            <span class="hint">Total tooling cost</span>
+          </div>
+          <div class="field">
+            <label>Amortize Over</label>
+            <div class="input-wrap"><input type="number" id="tooling_units" step="1" /><span class="suf">units</span></div>
+            <span class="hint">Spread over N units</span>
+          </div>
+          <div class="field">
+            <label>Inspection Fee</label>
+            <div class="input-wrap"><span class="pre">$</span><input type="number" id="inspection" step="any" /></div>
+            <span class="hint">Per shipment</span>
+          </div>
+          <div class="field">
+            <label>Other Origin</label>
+            <div class="input-wrap"><span class="pre">$</span><input type="number" id="other_origin" step="any" /></div>
+            <span class="hint">Per shipment</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Freight -->
+    <div class="card">
+      <div class="card-inner">
+        <div class="rule-thick"></div>
+        <div class="section-header"><span class="section-title">Ocean Freight &amp; Insurance</span></div>
+        <div class="rule-thin"></div>
+        <div class="field-grid" id="freight-grid">
+          <div class="field">
+            <label>Freight Mode</label>
+            <div class="select-wrap">
+              <select id="freight_mode" onchange="toggleFreightMode(this.value)">
+                <option value="fcl20">FCL – 20ft Container</option>
+                <option value="fcl40" selected>FCL – 40ft Container</option>
+                <option value="fcl40hc">FCL – 40ft HC Container</option>
+                <option value="lcl">LCL – Less than Container Load</option>
+              </select>
+              <span class="select-arrow">▼</span>
+            </div>
+          </div>
+          <div id="fcl-field" class="field">
+            <label>Total Freight Cost</label>
+            <div class="input-wrap"><span class="pre">$</span><input type="number" id="freight_cost" step="any" /></div>
+            <span class="hint">All-in ocean + origin charges</span>
+          </div>
+          <div id="lcl-cbm-field" class="field" style="display:none">
+            <label>Shipment CBM</label>
+            <div class="input-wrap"><input type="number" id="lcl_cbm" step="any" /><span class="suf">CBM</span></div>
+          </div>
+          <div id="lcl-rate-field" class="field" style="display:none">
+            <label>LCL Rate / CBM</label>
+            <div class="input-wrap"><span class="pre">$</span><input type="number" id="lcl_rate" step="any" /></div>
+          </div>
+          <div class="field">
+            <label>Insurance Rate</label>
+            <div class="input-wrap"><input type="number" id="insurance" value="0.5" step="any" /><span class="suf">%</span></div>
+            <span class="hint">% of CIF — typically 0.5%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Duties -->
+    <div class="card">
+      <div class="card-inner">
+        <div class="rule-thick"></div>
+        <div class="section-header"><span class="section-title">Duties &amp; US Customs</span></div>
+        <div class="rule-thin"></div>
+        <div class="field-grid">
+          <div class="field">
+            <label>HTS Base Duty</label>
+            <div class="input-wrap"><input type="number" id="duty_rate" step="any" /><span class="suf">%</span></div>
+            <span class="hint">MFN / general rate</span>
+          </div>
+          <div class="field">
+            <label>Section 301 Adder</label>
+            <div class="input-wrap"><input type="number" id="sec301" step="any" /><span class="suf">%</span></div>
+            <span class="hint">China goods adder</span>
+          </div>
+          <div class="field">
+            <label>IEEPA Adder</label>
+            <div class="input-wrap"><input type="number" id="ieepa" step="any" /><span class="suf">%</span></div>
+            <span class="hint">Current executive tariff</span>
+          </div>
+          <div class="field">
+            <label>MPF Rate</label>
+            <div class="input-wrap"><input type="number" id="mpf" value="0.3464" step="any" /><span class="suf">%</span></div>
+            <span class="hint">Merch. Processing Fee</span>
+          </div>
+          <div class="field">
+            <label>HMF Rate</label>
+            <div class="input-wrap"><input type="number" id="hmf" value="0.125" step="any" /><span class="suf">%</span></div>
+            <span class="hint">Harbor Maintenance Fee</span>
+          </div>
+          <div class="field">
+            <label>Customs Broker Fee</label>
+            <div class="input-wrap"><span class="pre">$</span><input type="number" id="broker" value="175" step="any" /></div>
+            <span class="hint">Per entry / shipment</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Destination -->
+    <div class="card">
+      <div class="card-inner">
+        <div class="rule-thick"></div>
+        <div class="section-header"><span class="section-title">US Destination Costs</span></div>
+        <div class="rule-thin"></div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Inland Freight / Drayage</label>
+            <div class="input-wrap"><span class="pre">$</span><input type="number" id="inland" step="any" /></div>
+            <span class="hint">Per shipment</span>
+          </div>
+          <div class="field">
+            <label>Warehousing / 3PL</label>
+            <div class="input-wrap"><span class="pre">$</span><input type="number" id="warehouse" step="any" /></div>
+            <span class="hint">Per shipment receiving</span>
+          </div>
+          <div class="field">
+            <label>Other Destination</label>
+            <div class="input-wrap"><span class="pre">$</span><input type="number" id="other_dest" step="any" /></div>
+            <span class="hint">Any additional US-side costs</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing Target -->
+    <div class="card">
+      <div class="card-inner">
+        <div class="rule-thick"></div>
+        <div class="section-header"><span class="section-title">Pricing Target</span></div>
+        <div class="rule-thin"></div>
+        <div class="field-grid cols1">
+          <div class="field">
+            <label>Target Gross Margin</label>
+            <div class="input-wrap"><input type="number" id="target_margin" value="40" step="any" /><span class="suf">%</span></div>
+            <span class="hint">Used to compute minimum sell price</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /inputs -->
+
+  <!-- ════ RIGHT: RESULTS ════ -->
+  <div id="results">
+
+    <!-- LDP Hero -->
+    <div id="ldp-hero">
+      <div id="ldp-label">Landed Duty Paid — Per Unit</div>
+      <div id="ldp-value">—</div>
+      <div id="ldp-divider"></div>
+      <table id="ldp-meta">
+        <tr>
+          <td>Min Sell @ <span id="meta-margin">40</span>% GM</td>
+          <td id="meta-sell">—</td>
+        </tr>
+        <tr>
+          <td>Effective Duty on FOB</td>
+          <td id="meta-duty">—</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Cost Breakdown -->
+    <div class="result-card">
+      <div class="result-card-header">Cost Breakdown / Unit</div>
+
+      <div class="subhead">Origin</div>
+      <div class="data-row"><span class="dr-label">FOB Cost</span><span class="dr-val" id="r-fob">—</span></div>
+      <div class="data-row"><span class="dr-label indent">Tooling (amortized)</span><span class="dr-val" id="r-tooling">—</span></div>
+      <div class="data-row"><span class="dr-label indent">Inspection</span><span class="dr-val" id="r-inspection">—</span></div>
+      <div class="data-row"><span class="dr-label indent">Other Origin</span><span class="dr-val" id="r-other-origin">—</span></div>
+
+      <div class="subhead">Ocean Freight &amp; Insurance</div>
+      <div class="data-row"><span class="dr-label">Ocean Freight</span><span class="dr-val" id="r-freight">—</span></div>
+      <div class="data-row"><span class="dr-label indent">Marine Insurance</span><span class="dr-val" id="r-insurance">—</span></div>
+      <div class="data-row shade"><span class="dr-label">CIF Value</span><span class="dr-val" id="r-cif">—</span></div>
+
+      <div class="subhead">Duties &amp; Customs</div>
+      <div class="data-row"><span class="dr-label" id="l-duty">HTS Duty (0%)</span><span class="dr-val" id="r-duty">—</span></div>
+      <div class="data-row"><span class="dr-label indent" id="l-301">Section 301 (0%)</span><span class="dr-val" id="r-301">—</span></div>
+      <div class="data-row"><span class="dr-label indent" id="l-ieepa">IEEPA (0%)</span><span class="dr-val" id="r-ieepa">—</span></div>
+      <div class="data-row"><span class="dr-label indent">MPF</span><span class="dr-val" id="r-mpf">—</span></div>
+      <div class="data-row"><span class="dr-label indent">HMF</span><span class="dr-val" id="r-hmf">—</span></div>
+      <div class="data-row"><span class="dr-label indent">Customs Broker</span><span class="dr-val" id="r-broker">—</span></div>
+      <div class="data-row shade"><span class="dr-label">Total Duties &amp; Fees</span><span class="dr-val" id="r-duties-total">—</span></div>
+
+      <div class="subhead">US Destination</div>
+      <div class="data-row"><span class="dr-label">Inland Freight</span><span class="dr-val" id="r-inland">—</span></div>
+      <div class="data-row"><span class="dr-label indent">Warehousing / 3PL</span><span class="dr-val" id="r-warehouse">—</span></div>
+      <div class="data-row"><span class="dr-label indent">Other Destination</span><span class="dr-val" id="r-other-dest">—</span></div>
+
+      <div class="data-row bold shade">
+        <span class="dr-label strong">LANDED DUTY PAID / UNIT</span>
+        <span class="dr-val" id="r-ldp-total">—</span>
+      </div>
+    </div>
+
+    <!-- Packaging card -->
+    <div id="pkg-placeholder">Enter product dimensions to generate packaging and container estimates.</div>
+
+    <div class="result-card" id="pkg-card">
+      <div class="result-card-header">Packaging Estimator</div>
+
+      <div class="subhead">Retail Box (suggested)</div>
+      <div class="data-row"><span class="dr-label">Dimensions</span><span class="dr-val" id="pkg-retail-dims">—</span></div>
+
+      <div class="subhead">Master Carton</div>
+      <div class="data-row"><span class="dr-label">Dimensions</span><span class="dr-val" id="pkg-ctn-dims">—</span></div>
+      <div class="data-row"><span class="dr-label">Pack Out</span><span class="dr-val" id="pkg-ctn-units">—</span></div>
+      <div class="data-row"><span class="dr-label">Est. Weight</span><span class="dr-val" id="pkg-ctn-wt">—</span></div>
+      <div class="data-row"><span class="dr-label">CBM / Carton</span><span class="dr-val" id="pkg-ctn-cbm">—</span></div>
+
+      <div class="subhead">Pallet Config (48 × 40")</div>
+      <div class="data-row"><span class="dr-label">Cartons / Pallet</span><span class="dr-val" id="pkg-pallet-ctns">—</span></div>
+      <div class="data-row"><span class="dr-label">Units / Pallet</span><span class="dr-val" id="pkg-pallet-units">—</span></div>
+
+      <div class="subhead">Container Capacity</div>
+      <div class="data-row"><span class="dr-label">20ft FCL</span><span class="dr-val" id="pkg-20ft">—</span></div>
+      <div class="data-row shade"><span class="dr-label">40ft FCL</span><span class="dr-val" id="pkg-40ft">—</span></div>
+    </div>
+
+    <!-- Print -->
+    <button id="print-btn" onclick="window.print()">Print / Save as PDF</button>
+
+  </div><!-- /results -->
+
+</div><!-- /main -->
+
+<script>
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const num = v => parseFloat(v) || 0;
+const fmt = n => (!n || isNaN(n) || n === 0) ? '—' : '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtForce = n => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const set = (id, val) => { const el = $(id); if (el) el.textContent = val; };
+
+// ── Freight mode toggle ───────────────────────────────────────────────────────
+function toggleFreightMode(mode) {
+  const isLCL = mode === 'lcl';
+  $('fcl-field').style.display      = isLCL ? 'none'  : '';
+  $('lcl-cbm-field').style.display  = isLCL ? ''      : 'none';
+  $('lcl-rate-field').style.display = isLCL ? ''      : 'none';
+  calculate();
+}
+
+// ── Packaging estimator ───────────────────────────────────────────────────────
+function estimatePackaging() {
+  const l = num($('dim_l').value), w = num($('dim_w').value),
+        h = num($('dim_h').value), wt = num($('weight').value);
+  if (!l || !w || !h) return null;
+
+  const innerPack = num($('inner_pack').value) || 1;
+  const rb = d => Math.ceil((d * 1.15) * 2) / 2;
+  const rl = rb(l), rw = rb(w), rh = rb(h);
+
+  const arr = [];
+  for (let a = 1; a <= 6; a++)
+    for (let b = 1; b <= 6; b++)
+      for (let c = 1; c <= 6; c++) {
+        const units = a * b * c;
+        if (units >= 6 && units <= 24) {
+          const cL = rl * a + 2, cW = rw * b + 2, cH = rh * c + 2;
+          arr.push({ a, b, c, units, cL, cW, cH, vol: cL * cW * cH });
+        }
+      }
+  arr.sort((x, y) => x.vol - y.vol);
+  const best = arr.find(a => a.units % innerPack === 0) || arr[0];
+  if (!best) return null;
+
+  const cbm = (best.cL * best.cW * best.cH) / 61023.7;
+  const cartonWt = (best.units * wt * 0.0625) + 1.5;
+  const ctnsL = Math.floor(48 / best.cL);
+  const ctnsW = Math.floor(40 / best.cW);
+  const layers = Math.floor(72 / best.cH);
+  const ctnsPerPallet = Math.max(ctnsL * ctnsW * layers, 1);
+
+  return {
+    retail: { l: rl, w: rw, h: rh },
+    carton: { l: best.cL.toFixed(1), w: best.cW.toFixed(1), h: best.cH.toFixed(1),
+              units: best.units, wt: cartonWt.toFixed(1), cbm: cbm.toFixed(4) },
+    pallet: { ctns: ctnsPerPallet, units: ctnsPerPallet * best.units, layers, ctnsL, ctnsW },
+    container: {
+      ctns20: Math.floor(25 / cbm), units20: Math.floor(25 / cbm) * best.units,
+      ctns40: Math.floor(55 / cbm), units40: Math.floor(55 / cbm) * best.units
+    }
+  };
+}
+
+// ── Main calculation ──────────────────────────────────────────────────────────
+function calculate() {
+  const fob    = num($('fob').value);
+  const units  = num($('order_qty').value) || 1;
+  const margin = num($('target_margin').value);
+
+  const toolingPerUnit = $('tooling_units').value
+    ? num($('tooling').value) / num($('tooling_units').value) : 0;
+
+  const mode = $('freight_mode').value;
+  const freightPerUnit = mode === 'lcl'
+    ? (num($('lcl_cbm').value) * num($('lcl_rate').value)) / units
+    : num($('freight_cost').value) / units;
+
+  const insuranceAmt    = (fob + freightPerUnit) * (num($('insurance').value) / 100);
+  const inspectionPerU  = num($('inspection').value) / units;
+  const otherOriginPerU = num($('other_origin').value) / units;
+  const cifValue        = fob + freightPerUnit + insuranceAmt;
+
+  const dutyAmt   = cifValue * (num($('duty_rate').value) / 100);
+  const sec301Amt = fob * (num($('sec301').value) / 100);
+  const ieepaAmt  = fob * (num($('ieepa').value) / 100);
+  const mpfAmt    = cifValue * (num($('mpf').value) / 100);
+  const hmfAmt    = cifValue * (num($('hmf').value) / 100);
+  const brokerPerU = num($('broker').value) / units;
+
+  const inlandPerU    = num($('inland').value) / units;
+  const warehousePerU = num($('warehouse').value) / units;
+  const otherDestPerU = num($('other_dest').value) / units;
+
+  const totalDuties = dutyAmt + sec301Amt + ieepaAmt + mpfAmt + hmfAmt;
+  const ldp = fob + toolingPerUnit + freightPerUnit + insuranceAmt + inspectionPerU
+            + otherOriginPerU + totalDuties + brokerPerU
+            + inlandPerU + warehousePerU + otherDestPerU;
+
+  const sellPrice = margin > 0 && ldp > 0 ? ldp / (1 - margin / 100) : null;
+  const effDuty   = fob > 0 ? (totalDuties / fob) * 100 : 0;
+
+  // ── Update hero ──
+  $('ldp-value').textContent  = ldp > 0 ? fmtForce(ldp) : '—';
+  $('meta-margin').textContent = margin;
+  $('meta-sell').textContent  = (sellPrice && ldp > 0) ? fmtForce(sellPrice) : '—';
+  $('meta-duty').textContent  = fob > 0 ? effDuty.toFixed(2) + '%' : '—';
+
+  // ── Update breakdown ──
+  set('r-fob',          fmt(fob));
+  set('r-tooling',      fmt(toolingPerUnit));
+  set('r-inspection',   fmt(inspectionPerU));
+  set('r-other-origin', fmt(otherOriginPerU));
+  set('r-freight',      fmt(freightPerUnit));
+  set('r-insurance',    fmt(insuranceAmt));
+  set('r-cif',          fmt(cifValue));
+  set('r-duty',         fmt(dutyAmt));
+  set('r-301',          fmt(sec301Amt));
+  set('r-ieepa',        fmt(ieepaAmt));
+  set('r-mpf',          fmt(mpfAmt));
+  set('r-hmf',          fmt(hmfAmt));
+  set('r-broker',       fmt(brokerPerU));
+  set('r-duties-total', fmt(totalDuties));
+  set('r-inland',       fmt(inlandPerU));
+  set('r-warehouse',    fmt(warehousePerU));
+  set('r-other-dest',   fmt(otherDestPerU));
+  set('r-ldp-total',    ldp > 0 ? fmtForce(ldp) : '—');
+
+  // ── Update duty labels ──
+  $('l-duty').textContent  = `HTS Duty (${$('duty_rate').value || 0}%)`;
+  $('l-301').textContent   = `Section 301 (${$('sec301').value || 0}%)`;
+  $('l-ieepa').textContent = `IEEPA (${$('ieepa').value || 0}%)`;
+
+  // ── Update packaging ──
+  const pkg = estimatePackaging();
+  if (pkg) {
+    $('pkg-placeholder').style.display = 'none';
+    $('pkg-card').classList.add('visible');
+    set('pkg-retail-dims', `${pkg.retail.l}" × ${pkg.retail.w}" × ${pkg.retail.h}"`);
+    set('pkg-ctn-dims',    `${pkg.carton.l}" × ${pkg.carton.w}" × ${pkg.carton.h}"`);
+    set('pkg-ctn-units',   `${pkg.carton.units} units`);
+    set('pkg-ctn-wt',      `${pkg.carton.wt} lbs`);
+    set('pkg-ctn-cbm',     `${pkg.carton.cbm} m³`);
+    set('pkg-pallet-ctns', `${pkg.pallet.ctns}  (${pkg.pallet.ctnsL}×${pkg.pallet.ctnsW}×${pkg.pallet.layers}L)`);
+    set('pkg-pallet-units', pkg.pallet.units.toLocaleString());
+    set('pkg-20ft', `${pkg.container.ctns20} ctns  ·  ${pkg.container.units20.toLocaleString()} units`);
+    set('pkg-40ft', `${pkg.container.ctns40} ctns  ·  ${pkg.container.units40.toLocaleString()} units`);
+  } else {
+    $('pkg-placeholder').style.display = '';
+    $('pkg-card').classList.remove('visible');
+  }
+}
+
+// ── Attach listeners ──────────────────────────────────────────────────────────
+document.querySelectorAll('input, select').forEach(el => {
+  el.addEventListener('input', calculate);
+  el.addEventListener('change', calculate);
+});
+
+// Initial calc
+calculate();
+</script>
+</body>
+</html>
