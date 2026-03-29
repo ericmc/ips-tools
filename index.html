@@ -147,7 +147,21 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
 .qp-footer-item { font-size: 10px; color: #aaa; }
 .qp-footer-item span { color: #555; font-weight: 600; }
 @media (max-width: 1000px) { #main, #quote-panel { grid-template-columns: 1fr; } #results { order: -1; } .fg3 { grid-template-columns: repeat(2,1fr); } .compare-load-area { grid-template-columns: 1fr; } }
-@media print { body { background: #fff; } #tab-nav { display: none; } #header { -webkit-print-color-adjust: exact; print-color-adjust: exact; } #ldp-hero, .qp-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .tab-panel { display: block !important; } .action-bar, .btn { display: none !important; } #main { grid-template-columns: 1fr 360px; gap: 12px; padding: 12px; } }
+@media print {
+  body { background: #fff; }
+  /* Hide everything except the quote preview when printing from quote tab */
+  #header, #tab-nav, #tab-calculator, #tab-compare { display: none !important; }
+  #tab-quote { display: block !important; }
+  #quote-panel { display: block !important; padding: 0 !important; }
+  #quote-inputs-panel { display: none !important; }
+  #quote-preview-wrapper { display: block !important; width: 100% !important; }
+  #quote-preview { border: none !important; }
+  .qp-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .qp-price-table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .qp-preview-label { display: none !important; }
+  .qp-print-btn-wrapper { display: none !important; }
+  #quote-panel { grid-template-columns: 1fr !important; }
+}
 </style>
 </head>
 <body>
@@ -186,13 +200,55 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
     </div></div>
 
     <div class="card"><div class="card-inner">
-      <div class="rule-thick"></div><div class="section-header"><span class="section-title">Product Dimensions</span><span class="section-right">For packaging estimator</span></div><div class="rule-thin"></div>
-      <div class="fg3">
-        <div class="field"><label>Length</label><div class="input-wrap"><input type="number" id="dim_l" step="any" /><span class="suf">in</span></div></div>
-        <div class="field"><label>Width</label><div class="input-wrap"><input type="number" id="dim_w" step="any" /><span class="suf">in</span></div></div>
-        <div class="field"><label>Height</label><div class="input-wrap"><input type="number" id="dim_h" step="any" /><span class="suf">in</span></div></div>
+      <div class="rule-thick"></div>
+      <div class="section-header"><span class="section-title">Product Dimensions</span><span class="section-right">Unit dims or retail box dims</span></div>
+      <div class="rule-thin"></div>
+      <div class="fg3" style="padding-top:12px;">
+        <div class="field"><label>Length</label><div class="input-wrap"><input type="number" id="dim_l" step="any" oninput="onDimChange()" /><span class="suf">in</span></div></div>
+        <div class="field"><label>Width</label><div class="input-wrap"><input type="number" id="dim_w" step="any" oninput="onDimChange()" /><span class="suf">in</span></div></div>
+        <div class="field"><label>Height</label><div class="input-wrap"><input type="number" id="dim_h" step="any" oninput="onDimChange()" /><span class="suf">in</span></div></div>
         <div class="field"><label>Unit Weight</label><div class="input-wrap"><input type="number" id="weight" step="any" /><span class="suf">oz</span></div><span class="hint">Weight in ounces</span></div>
-        <div class="field"><label>Units / Inner Pack</label><div class="input-wrap"><input type="number" id="inner_pack" value="1" step="1" /></div></div>
+        <div class="field span2" style="display:flex;align-items:flex-start;gap:10px;padding-top:18px;">
+          <input type="checkbox" id="dims_are_box" onchange="onDimChange()" style="margin-top:2px;width:16px;height:16px;accent-color:#000;flex-shrink:0;" />
+          <label for="dims_are_box" style="font-size:11px;color:#444;font-weight:400;letter-spacing:0;text-transform:none;cursor:pointer;line-height:1.4;">These are <strong>actual retail box dimensions</strong> — skip the 15% estimate and use these dims exactly for the retail box</label>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid #e8e8e8;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#555;margin-bottom:10px;">Export Carton Configuration</div>
+        <div class="fg3">
+          <div class="field">
+            <label>Units per Export Carton</label>
+            <div class="input-wrap"><input type="number" id="carton_qty" step="1" min="1" oninput="onCartonQtyChange()" /></div>
+            <span class="hint">Enter qty — arrangement auto-fills</span>
+          </div>
+          <div class="field span2">
+            <label>Pack Arrangement <span id="arr-status" style="font-size:11px;font-weight:400;margin-left:6px;"></span></label>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <div class="input-wrap" style="width:70px;"><input type="number" id="arr_l" step="1" min="1" value="1" oninput="onArrChange()" /></div>
+              <span style="font-size:14px;color:#aaa;">×</span>
+              <div class="input-wrap" style="width:70px;"><input type="number" id="arr_w" step="1" min="1" value="1" oninput="onArrChange()" /></div>
+              <span style="font-size:14px;color:#aaa;">×</span>
+              <div class="input-wrap" style="width:70px;"><input type="number" id="arr_h" step="1" min="1" value="1" oninput="onArrChange()" /></div>
+              <span id="arr-total" style="font-family:'Roboto Mono',monospace;font-size:12px;color:#555;white-space:nowrap;"></span>
+            </div>
+            <span class="hint">L × W × H arrangement of units inside carton</span>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;padding:10px 12px;background:#f8f8f8;border:1px solid #e0e0e0;" id="carton-calc-display">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#aaa;margin-bottom:6px;">Calculated Export Carton</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+            <div><div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;">Length</div><div style="font-family:'Roboto Mono',monospace;font-size:12px;color:#111;" id="calc-ctn-l">—</div></div>
+            <div><div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;">Width</div><div style="font-family:'Roboto Mono',monospace;font-size:12px;color:#111;" id="calc-ctn-w">—</div></div>
+            <div><div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;">Height</div><div style="font-family:'Roboto Mono',monospace;font-size:12px;color:#111;" id="calc-ctn-h">—</div></div>
+            <div><div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;">CBM</div><div style="font-family:'Roboto Mono',monospace;font-size:12px;color:#111;" id="calc-ctn-cbm">—</div></div>
+            <div><div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;">Gross Wt</div><div style="font-family:'Roboto Mono',monospace;font-size:12px;color:#111;" id="calc-ctn-wt">—</div></div>
+            <div><div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;">Net Wt</div><div style="font-family:'Roboto Mono',monospace;font-size:12px;color:#111;" id="calc-ctn-net">—</div></div>
+            <div><div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;">Units</div><div style="font-family:'Roboto Mono',monospace;font-size:12px;color:#111;" id="calc-ctn-units">—</div></div>
+            <div><div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;">Source</div><div style="font-family:'Roboto Mono',monospace;font-size:11px;color:#888;" id="calc-ctn-source">—</div></div>
+          </div>
+        </div>
       </div>
     </div></div>
 
@@ -369,12 +425,14 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
     <div id="pkg-placeholder">Enter product dimensions to generate packaging and container estimates.</div>
     <div class="result-card" id="pkg-card">
       <div class="result-card-header">Packaging Estimator</div>
-      <div class="subhead">Retail Box (suggested)</div>
+      <div class="subhead">Retail Box</div>
       <div class="data-row"><span class="dr-label">Dimensions</span><span class="dr-val" id="pkg-retail-dims">—</span></div>
-      <div class="subhead">Master Carton</div>
+      <div class="data-row"><span class="dr-label indent">Source</span><span class="dr-val" id="pkg-retail-source">—</span></div>
+      <div class="subhead">Export Carton</div>
       <div class="data-row"><span class="dr-label">Dimensions</span><span class="dr-val" id="pkg-ctn-dims">—</span></div>
       <div class="data-row"><span class="dr-label">Pack Out</span><span class="dr-val" id="pkg-ctn-units">—</span></div>
-      <div class="data-row"><span class="dr-label">Est. Weight</span><span class="dr-val" id="pkg-ctn-wt">—</span></div>
+      <div class="data-row"><span class="dr-label">Arrangement</span><span class="dr-val" id="pkg-ctn-arr">—</span></div>
+      <div class="data-row"><span class="dr-label">Gross Weight</span><span class="dr-val" id="pkg-ctn-wt">—</span></div>
       <div class="data-row"><span class="dr-label">CBM / Carton</span><span class="dr-val" id="pkg-ctn-cbm">—</span></div>
       <div class="subhead">Pallet Config (48 × 40")</div>
       <div class="data-row"><span class="dr-label">Cartons / Pallet</span><span class="dr-val" id="pkg-pallet-ctns">—</span></div>
@@ -392,7 +450,7 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
 <!-- ══ TAB 2: QUOTE GENERATOR ════════════════════════════════════════════════ -->
 <div id="tab-quote" class="tab-panel">
 <div id="quote-panel">
-  <div>
+  <div id="quote-inputs-panel">
     <div class="card"><div class="card-inner">
       <div class="rule-thick"></div><div class="section-header"><span class="section-title">Quote Settings</span><span class="section-right">Product data pulled from Calculator tab</span></div><div class="rule-thin"></div>
       <div class="fg2" style="padding-top:12px;">
@@ -434,10 +492,19 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
 
     <div class="action-bar">
       <button class="btn primary" onclick="saveQuote()">Save Quote (JSON)</button>
-      <button class="btn" onclick="window.print()">Print / Export PDF</button>
     </div>
   </div>
 
+  <div id="quote-preview-wrapper">
+    <div class="qp-preview-label" style="background:#f0f0f0;border:1px solid #d0d0d0;border-bottom:none;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <span style="font-family:'Archivo',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#555;">Quote Preview</span>
+        <span style="font-family:'Archivo',sans-serif;font-size:10px;color:#aaa;margin-left:10px;">This is what your client will receive</span>
+      </div>
+      <div class="qp-print-btn-wrapper">
+        <button class="btn primary" onclick="printQuote()" style="font-size:11px;padding:7px 18px;">Print / Export PDF</button>
+      </div>
+    </div>
   <div id="quote-preview">
     <div class="qp-header">
       <div>
@@ -503,6 +570,8 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
     </div>
   </div>
 </div>
+  </div><!-- /quote-preview-wrapper -->
+</div>
 </div>
 
 <!-- ══ TAB 3: VERSION COMPARE ════════════════════════════════════════════════ -->
@@ -555,17 +624,41 @@ document.querySelectorAll('input[name=tooling_mode]').forEach(r=>r.addEventListe
 function estimatePackaging(){
   const l=num($('dim_l').value),w=num($('dim_w').value),h=num($('dim_h').value),wt=num($('weight').value);
   if(!l||!w||!h) return null;
-  const ip=num($('inner_pack').value)||1;
-  const rb=d=>Math.ceil((d*1.15)*2)/2;
-  const rl=rb(l),rw=rb(w),rh=rb(h);
-  const arr=[];
-  for(let a=1;a<=6;a++) for(let b=1;b<=6;b++) for(let c=1;c<=6;c++){const u=a*b*c;if(u>=6&&u<=24)arr.push({a,b,c,units:u,cL:rl*a+2,cW:rw*b+2,cH:rh*c+2,vol:(rl*a+2)*(rw*b+2)*(rh*c+2)});}
-  arr.sort((x,y)=>x.vol-y.vol);
-  const best=arr.find(a=>a.units%ip===0)||arr[0];
-  if(!best) return null;
-  const cbm=(best.cL*best.cW*best.cH)/61023.7,cWt=(best.units*wt*0.0625)+1.5;
-  const ctnsL=Math.floor(48/best.cL),ctnsW=Math.floor(40/best.cW),layers=Math.floor(72/best.cH),cpp=Math.max(ctnsL*ctnsW*layers,1);
-  return{retail:{l:rl,w:rw,h:rh},carton:{l:best.cL.toFixed(1),w:best.cW.toFixed(1),h:best.cH.toFixed(1),units:best.units,wt:cWt.toFixed(1),cbm:cbm.toFixed(4)},pallet:{ctns:cpp,units:cpp*best.units,layers,ctnsL,ctnsW},container:{ctns20:Math.floor(25/cbm),units20:Math.floor(25/cbm)*best.units,ctns40:Math.floor(55/cbm),units40:Math.floor(55/cbm)*best.units}};
+
+  // Get retail box dims
+  const rb=getRetailBoxDims();
+  if(!rb) return null;
+
+  // Get carton dims from arrangement inputs
+  const al=parseInt($('arr_l').value)||1;
+  const aw=parseInt($('arr_w').value)||1;
+  const ah=parseInt($('arr_h').value)||1;
+  const ctnQty=parseInt($('carton_qty').value)||al*aw*ah;
+  const WALL=0.75; // 3/8" corrugated, 2 walls per dim
+  const cL=(rb.l*al)+WALL;
+  const cW=(rb.w*aw)+WALL;
+  const cH=(rb.h*ah)+WALL;
+  const cbm=(cL*cW*cH)/1728*0.0283168;
+  const surfSqIn=2*(cL*cW+cL*cH+cW*cH);
+  const corWt=(surfSqIn/144)*0.12;
+  const grossWt=(ctnQty*wt*0.0625)+corWt;
+
+  // Pallet config: 48x40" base, max 72" height
+  const ctnsL=Math.max(Math.floor(48/cL),1);
+  const ctnsW=Math.max(Math.floor(40/cW),1);
+  const layers=Math.max(Math.floor(72/cH),1);
+  const cpp=ctnsL*ctnsW*layers;
+
+  // Container capacity
+  const ctns20=cbm>0?Math.floor(25/cbm):0;
+  const ctns40=cbm>0?Math.floor(55/cbm):0;
+
+  return{
+    retail:{l:rb.l,w:rb.w,h:rb.h},
+    carton:{l:cL.toFixed(2),w:cW.toFixed(2),h:cH.toFixed(2),units:ctnQty,wt:grossWt.toFixed(2),cbm:cbm.toFixed(4)},
+    pallet:{ctns:cpp,units:cpp*ctnQty,layers,ctnsL,ctnsW},
+    container:{ctns20,units20:ctns20*ctnQty,ctns40,units40:ctns40*ctnQty}
+  };
 }
 
 function computeLDP(freightPerUnit,orderQty){
@@ -700,7 +793,22 @@ function calculate(){
   else{$('tooling-callout-card').style.display='none';}
 
   const pkg=estimatePackaging();
-  if(pkg){$('pkg-placeholder').style.display='none';$('pkg-card').classList.add('visible');set('pkg-retail-dims',`${pkg.retail.l}" × ${pkg.retail.w}" × ${pkg.retail.h}"`);set('pkg-ctn-dims',`${pkg.carton.l}" × ${pkg.carton.w}" × ${pkg.carton.h}"`);set('pkg-ctn-units',`${pkg.carton.units} units`);set('pkg-ctn-wt',`${pkg.carton.wt} lbs`);set('pkg-ctn-cbm',`${pkg.carton.cbm} m³`);set('pkg-pallet-ctns',`${pkg.pallet.ctns}  (${pkg.pallet.ctnsL}×${pkg.pallet.ctnsW}×${pkg.pallet.layers}L)`);set('pkg-pallet-units',pkg.pallet.units.toLocaleString());set('pkg-20ft',`${pkg.container.ctns20} ctns · ${pkg.container.units20.toLocaleString()} units`);set('pkg-40ft',`${pkg.container.ctns40} ctns · ${pkg.container.units40.toLocaleString()} units`);}
+  if(pkg){
+    $('pkg-placeholder').style.display='none';$('pkg-card').classList.add('visible');
+    const isActualBox=$('dims_are_box').checked;
+    set('pkg-retail-dims',`${pkg.retail.l}" × ${pkg.retail.w}" × ${pkg.retail.h}"`);
+    set('pkg-retail-source',isActualBox?'Actual box dims (user entered)':'Estimated from product dims (+15%)');
+    set('pkg-ctn-dims',`${pkg.carton.l}" × ${pkg.carton.w}" × ${pkg.carton.h}"`);
+    set('pkg-ctn-units',`${pkg.carton.units} units`);
+    const al=$('arr_l').value||1,aw=$('arr_w').value||1,ah=$('arr_h').value||1;
+    set('pkg-ctn-arr',`${al} × ${aw} × ${ah} arrangement`);
+    set('pkg-ctn-wt',`${pkg.carton.wt} lbs gross`);
+    set('pkg-ctn-cbm',`${pkg.carton.cbm} m³`);
+    set('pkg-pallet-ctns',`${pkg.pallet.ctns}  (${pkg.pallet.ctnsL}×${pkg.pallet.ctnsW}×${pkg.pallet.layers}L)`);
+    set('pkg-pallet-units',pkg.pallet.units.toLocaleString());
+    set('pkg-20ft',`${pkg.container.ctns20} ctns · ${pkg.container.units20.toLocaleString()} units`);
+    set('pkg-40ft',`${pkg.container.ctns40} ctns · ${pkg.container.units40.toLocaleString()} units`);
+  }
   else{$('pkg-placeholder').style.display='';$('pkg-card').classList.remove('visible');}
 }
 
@@ -748,6 +856,12 @@ function removePriceBreak(id){const el=$('pb-'+id);if(el)el.remove();pbRows=pbRo
 function getPriceBreaks(){return pbRows.map(id=>{const q=$('pb-qty-'+id),m=$('pb-m-'+id);if(!q||!m)return null;return{qty:num(q.value),margin:num(m.value)};}).filter(r=>r&&r.qty>0&&r.margin>0);}
 function autoFillBreaks(){pbRows.forEach(id=>{const el=$('pb-'+id);if(el)el.remove();});pbRows=[];const m=num($('q-margin').value)||35;const u20=num($('fcl20_units').value),u40=num($('fcl40_units').value),u40hc=num($('fcl40hc_units').value);if(u20>0)addPriceBreak(u20,m);if(u40>0)addPriceBreak(u40,m);if(u40hc>0)addPriceBreak(u40hc,m);if(pbRows.length===0)addPriceBreak('','');updateQuotePreview();}
 function toggleCustomPayment(){$('custom-payment-field').style.display=$('q-payment').value==='custom'?'':'none';updateQuotePreview();}
+
+function printQuote(){
+  // Ensure we are on the quote tab before printing
+  switchTab('quote');
+  setTimeout(()=>window.print(), 150);
+}
 
 function saveQuote(){
   const state=collectState();
@@ -859,12 +973,124 @@ function clearForm(){
   updateQuotePreview();
 }
 
-// Pre-filled test defaults: Perfect Curve Cap Rack 18
+// ── Carton arrangement logic ─────────────────────────────────────────────────
+
+// Find most cubic arrangement for N units
+function bestArrangement(n){
+  if(!n||n<1) return {l:1,w:1,h:1};
+  let best=null,bestScore=Infinity;
+  for(let a=1;a<=n;a++){
+    if(n%a!==0) continue;
+    for(let b=a;b<=n/a;b++){
+      if((n/a)%b!==0) continue;
+      const c=n/(a*b);
+      if(c<b) continue;
+      // Score = deviation from perfect cube (lower = more cubic)
+      const avg=(a+b+c)/3;
+      const score=Math.abs(a-avg)+Math.abs(b-avg)+Math.abs(c-avg);
+      if(score<bestScore){bestScore=score;best={l:a,w:b,h:c};}
+    }
+  }
+  return best||{l:1,w:1,h:n};
+}
+
+function onCartonQtyChange(){
+  const qty=parseInt($('carton_qty').value)||0;
+  if(qty>0){
+    const arr=bestArrangement(qty);
+    $('arr_l').value=arr.l;
+    $('arr_w').value=arr.w;
+    $('arr_h').value=arr.h;
+  }
+  onArrChange();
+}
+
+function onArrChange(){
+  const qty=parseInt($('carton_qty').value)||0;
+  const al=parseInt($('arr_l').value)||1;
+  const aw=parseInt($('arr_w').value)||1;
+  const ah=parseInt($('arr_h').value)||1;
+  const total=al*aw*ah;
+  const statusEl=$('arr-status');
+  const totalEl=$('arr-total');
+  if(qty>0){
+    if(total===qty){
+      statusEl.textContent='✅';statusEl.style.color='#2a7a2a';
+      totalEl.textContent='= '+total+' ✅';totalEl.style.color='#2a7a2a';
+    } else {
+      statusEl.textContent='❌ '+al+'×'+aw+'×'+ah+'='+total+' ≠ '+qty;
+      statusEl.style.color='#c00';
+      totalEl.textContent='= '+total+' ❌';totalEl.style.color='#c00';
+    }
+  } else {
+    statusEl.textContent='';totalEl.textContent='= '+total;totalEl.style.color='#555';
+  }
+  updateCartonCalc();
+  calculate();
+}
+
+function onDimChange(){
+  updateCartonCalc();
+  calculate();
+}
+
+// 3/8" corrugated = 0.375" per wall, 2 walls per dim = 0.75" per dimension
+const WALL = 0.75;
+
+function getRetailBoxDims(){
+  const l=parseFloat($('dim_l').value)||0;
+  const w=parseFloat($('dim_w').value)||0;
+  const h=parseFloat($('dim_h').value)||0;
+  const isActualBox=$('dims_are_box').checked;
+  if(!l||!w||!h) return null;
+  if(isActualBox) return {l,w,h};
+  // Estimate: product dims + 15% each side, rounded to nearest 0.5"
+  const rb=d=>Math.ceil((d*1.15)*2)/2;
+  return {l:rb(l),w:rb(w),h:rb(h)};
+}
+
+function updateCartonCalc(){
+  const rb=getRetailBoxDims();
+  if(!rb){
+    ['calc-ctn-l','calc-ctn-w','calc-ctn-h','calc-ctn-cbm','calc-ctn-wt','calc-ctn-net','calc-ctn-units','calc-ctn-source'].forEach(id=>set(id,'—'));
+    return;
+  }
+  const al=parseInt($('arr_l').value)||1;
+  const aw=parseInt($('arr_w').value)||1;
+  const ah=parseInt($('arr_h').value)||1;
+  const qty=parseInt($('carton_qty').value)||al*aw*ah;
+  const wt=parseFloat($('weight').value)||0;
+
+  // Export carton dims = retail box * arrangement + wall allowance each dim
+  const cL=(rb.l*al)+WALL;
+  const cW=(rb.w*aw)+WALL;
+  const cH=(rb.h*ah)+WALL;
+  const cbm=(cL*cW*cH)/1728*0.0283168; // cubic inches to CBM
+  const netWt=qty*wt*0.0625; // oz to lbs
+  // Corrugate weight: surface area of box * 3/8" corrugated density ~0.12 lbs/sqft
+  const surfaceInSqIn=2*(cL*cW+cL*cH+cW*cH);
+  const corWt=(surfaceInSqIn/144)*0.12;
+  const grossWt=netWt+corWt;
+  const isActualBox=$('dims_are_box').checked;
+
+  set('calc-ctn-l',cL.toFixed(2)+'"');
+  set('calc-ctn-w',cW.toFixed(2)+'"');
+  set('calc-ctn-h',cH.toFixed(2)+'"');
+  set('calc-ctn-cbm',cbm.toFixed(4)+' m³');
+  set('calc-ctn-wt',grossWt.toFixed(2)+' lbs');
+  set('calc-ctn-net',netWt.toFixed(2)+' lbs');
+  set('calc-ctn-units',qty+' units');
+  set('calc-ctn-source',isActualBox?'Actual box dims':'Estimated from product');
+}
+
+// ── Pre-filled test defaults: Perfect Curve Cap Rack 18
 function loadTestDefaults(){
-  const d={'customer':'Perfect Curve','sku':'12205-TEST','description':'Cap Rack 18','order_qty':'27000','fob':'1.60','mgmt_fee_pct':'0.25','inspection':'350','fcl20_cost':'3800','fcl20_units':'27000','known_20ft':'27000','fcl40_cost':'4800','fcl40_units':'45000','known_40ft':'45000','duty_rate':'5.4','ieepa':'19','mpf':'0.3464','hmf':'0.125','broker':'175','inland':'1200','insurance':'0.5','target_margin':'19','target_retail':'9.50'};
+  const d={'customer':'Perfect Curve','sku':'12205-TEST','description':'Cap Rack 18','order_qty':'27000','fob':'1.60','mgmt_fee_pct':'0.25','inspection':'350','fcl20_cost':'3800','known_20ft':'27000','fcl40_cost':'4800','known_40ft':'45000','duty_rate':'5.4','ieepa':'19','mpf':'0.3464','hmf':'0.125','broker':'175','inland':'1200','insurance':'0.5','target_margin':'19','target_retail':'9.50','carton_qty':'4','arr_l':'1','arr_w':'2','arr_h':'2'};
   Object.keys(d).forEach(id=>{const el=$(id);if(el)el.value=d[id];});
   const oc=$('origin_country');if(oc){for(let i=0;i<oc.options.length;i++){if(oc.options[i].value==='Cambodia'){oc.selectedIndex=i;break;}}}
   const dst=$('destination');if(dst){for(let i=0;i<dst.options.length;i++){if(dst.options[i].value==='Long Beach, CA'){dst.selectedIndex=i;break;}}}
+  onArrChange();
+  updateCartonCalc();
 }
 
 document.querySelectorAll('input:not([type=radio]):not([type=file]), select, textarea').forEach(el=>{el.addEventListener('input',()=>{calculate();updateQuotePreview();});el.addEventListener('change',()=>{calculate();updateQuotePreview();});});
