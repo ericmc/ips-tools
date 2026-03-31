@@ -47,6 +47,13 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
 .select-arrow { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #888; font-size: 10px; }
 .hint { font-size: 10px; color: #aaa; font-style: italic; }
 .hint.imp { color: #777; font-style: normal; background: #f8f8f8; border-left: 2px solid #ccc; padding: 4px 8px; margin-top: 2px; }
+.img-upload-zone { border: 1.5px dashed #c8c8c8; padding: 12px; text-align: center; cursor: pointer; transition: border-color 0.15s; background: #fafafa; }
+.img-upload-zone:hover { border-color: #000; }
+.img-upload-zone input[type=file] { display: none; }
+.img-thumb { width: 60px; height: 60px; object-fit: cover; border: 1px solid #d0d0d0; }
+.img-thumb-lg { max-width: 100%; max-height: 200px; object-fit: contain; border: 1px solid #d0d0d0; margin-top: 8px; }
+.img-slot { display: flex; flex-direction: column; gap: 6px; }
+.img-slot-header { display: flex; justify-content: space-between; align-items: center; }
 .radio-group { display: flex; gap: 16px; padding: 6px 0; }
 .radio-group label { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #444; cursor: pointer; font-weight: 400; letter-spacing: 0; text-transform: none; }
 .radio-group input[type=radio] { accent-color: #000; width: 14px; height: 14px; }
@@ -149,19 +156,38 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
 @media (max-width: 1000px) { #main, #quote-panel { grid-template-columns: 1fr; } #results { order: -1; } .fg3 { grid-template-columns: repeat(2,1fr); } .compare-load-area { grid-template-columns: 1fr; } }
 @media print {
   body { background: #fff; }
-  /* Hide everything except the quote preview when printing from quote tab */
-  #header, #tab-nav, #tab-calculator, #tab-compare { display: none !important; }
-  #tab-quote { display: block !important; }
-  #quote-panel { display: block !important; padding: 0 !important; }
-  #quote-inputs-panel { display: none !important; }
-  #quote-preview-wrapper { display: block !important; width: 100% !important; }
-  #quote-preview { border: none !important; }
+}
+@media print and (orientation: portrait) {
+  /* Quote print — portrait, quote preview only */
+  body.printing-quote #header,
+  body.printing-quote #tab-nav,
+  body.printing-quote #tab-calculator,
+  body.printing-quote #tab-compare { display: none !important; }
+  body.printing-quote #tab-quote { display: block !important; }
+  body.printing-quote #quote-inputs-panel { display: none !important; }
+  body.printing-quote #quote-preview-wrapper { display: block !important; width: 100% !important; }
+  body.printing-quote #quote-preview { border: none !important; }
+  body.printing-quote .qp-preview-label { display: none !important; }
+  body.printing-quote .qp-print-btn-wrapper { display: none !important; }
+  body.printing-quote #quote-panel { display: block !important; padding: 0 !important; }
   .qp-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .qp-price-table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .qp-preview-label { display: none !important; }
-  .qp-print-btn-wrapper { display: none !important; }
-  #quote-panel { grid-template-columns: 1fr !important; }
 }
+@media print and (orientation: landscape) {
+  /* Cost Sheet print — landscape, full calculator content */
+  body.printing-costsheet #header { display: block !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body.printing-costsheet #tab-nav { display: none !important; }
+  body.printing-costsheet #tab-quote,
+  body.printing-costsheet #tab-compare { display: none !important; }
+  body.printing-costsheet #tab-calculator { display: block !important; }
+  body.printing-costsheet #main { grid-template-columns: 1fr 360px !important; gap: 10px !important; padding: 10px !important; }
+  body.printing-costsheet .action-bar { display: none !important; }
+  body.printing-costsheet #ldp-hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body.printing-costsheet .result-card-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body.printing-costsheet #cs-confidential { display: block !important; }
+  body.printing-costsheet #cs-images-section { display: block !important; }
+}
+#cs-confidential { display: none; }
 </style>
 </head>
 <body>
@@ -178,7 +204,7 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
 </div>
 
 <div id="tab-nav">
-  <button class="tab-btn active" onclick="switchTab('calculator')">Calculator</button>
+  <button class="tab-btn active" onclick="switchTab('calculator')">Cost Sheet Calculator</button>
   <button class="tab-btn" onclick="switchTab('quote')">Quote Generator</button>
   <button class="tab-btn" onclick="switchTab('compare')">Version Compare</button>
 </div>
@@ -195,7 +221,7 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
         <div class="field"><label>Description</label><div class="input-wrap"><input type="text" id="description" /></div></div>
         <div class="field"><label>Country of Origin</label><div class="select-wrap"><select id="origin_country"><option value="">— Select —</option><option>China</option><option>Vietnam</option><option>Cambodia</option><option>Taiwan</option><option>India</option><option>Bangladesh</option><option>Indonesia</option><option>Thailand</option><option>Mexico</option><option>Other</option></select><span class="select-arrow">▼</span></div></div>
         <div class="field"><label>Final Destination</label><div class="select-wrap"><select id="destination"><option value="">— Select —</option><option>Los Angeles, CA</option><option>Long Beach, CA</option><option>New York, NY</option><option>Seattle, WA</option><option>Chicago, IL</option><option>Houston, TX</option><option>Savannah, GA</option><option>Norfolk, VA</option><option>Other</option></select><span class="select-arrow">▼</span></div></div>
-        <div class="field"><label>Order Quantity</label><div class="input-wrap"><input type="number" id="order_qty" step="1" /></div><span class="hint">Total units this PO</span></div>
+        <div class="field"><label>Order Quantity</label><div class="input-wrap"><input type="number" id="order_qty" step="1" oninput="updateLclCbm()" /></div><span class="hint">Total units this PO</span></div>
       </div>
     </div></div>
 
@@ -282,7 +308,23 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
         <thead><tr><th style="width:120px">Mode</th><th>Freight Cost</th><th style="width:160px">Units in Load</th></tr></thead>
         <tbody>
           <tr><td><span class="ship-mode-label">LCL</span></td>
-            <td><div style="display:flex;gap:6px;align-items:center;"><div class="input-wrap" style="flex:1"><input type="number" id="lcl_cbm" step="any" placeholder="CBM" /><span class="suf">CBM</span></div><span style="font-size:11px;color:#aaa;">×</span><div class="input-wrap" style="flex:1"><span class="pre">$</span><input type="number" id="lcl_rate" step="any" placeholder="$/CBM" /></div></div></td>
+            <td>
+              <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <span style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#aaa;">Shipment CBM (auto)</span>
+                  <span id="lcl_cbm_display" style="font-family:'Roboto Mono',monospace;font-size:13px;color:#111;padding:7px 10px;background:#f6f6f6;border:1px solid #e0e0e0;min-width:90px;">—</span>
+                </div>
+                <span style="font-size:14px;color:#aaa;padding-top:18px;">×</span>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <span style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#aaa;">Rate / CBM</span>
+                  <div class="input-wrap"><span class="pre">$</span><input type="number" id="lcl_rate" step="any" placeholder="$/CBM" oninput="updateLclCbm()" /></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:2px;padding-top:18px;">
+                  <span style="font-family:'Roboto Mono',monospace;font-size:11px;color:#888;">= <span id="lcl_total_display">—</span></span>
+                </div>
+              </div>
+              <input type="hidden" id="lcl_cbm" value="0" />
+            </td>
             <td><span id="disp_lcl_units" style="font-family:'Roboto Mono',monospace;font-size:12px;color:#555;padding-left:6px;">—</span></td></tr>
           <tr><td><span class="ship-mode-label">20ft FCL</span></td>
             <td><div class="input-wrap"><span class="pre">$</span><input type="number" id="fcl20_cost" step="any" /></div></td>
@@ -339,6 +381,53 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
       </div>
     </div></div>
 
+    <!-- Images Card -->
+    <div class="card"><div class="card-inner">
+      <div class="rule-thick"></div>
+      <div class="section-header"><span class="section-title">Reference Images</span><span class="section-right">Appear on Cost Sheet and optionally on Quote</span></div>
+      <div class="rule-thin"></div>
+      <div class="fg3" style="padding-top:12px;">
+        <div class="img-slot" id="img-slot-0">
+          <div class="img-slot-header">
+            <label style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#555;">Product Photo</label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:#555;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;"><input type="checkbox" id="img-quote-0" style="accent-color:#000;" checked /> Include on quote</label>
+          </div>
+          <div class="img-upload-zone" onclick="document.getElementById('img-file-0').click()">
+            <input type="file" id="img-file-0" accept="image/*" onchange="loadImage(0,this)" />
+            <img id="img-prev-0" class="img-thumb" style="display:none;" />
+            <div id="img-placeholder-0" style="font-size:11px;color:#bbb;">Click to upload</div>
+          </div>
+          <button onclick="clearImage(0)" style="font-size:10px;color:#aaa;background:none;border:none;cursor:pointer;text-align:left;display:none;" id="img-clear-0">✕ Remove</button>
+        </div>
+        <div class="img-slot" id="img-slot-1">
+          <div class="img-slot-header">
+            <label style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#555;">Sample / Reference</label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:#555;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;"><input type="checkbox" id="img-quote-1" style="accent-color:#000;" /> Include on quote</label>
+          </div>
+          <div class="img-upload-zone" onclick="document.getElementById('img-file-1').click()">
+            <input type="file" id="img-file-1" accept="image/*" onchange="loadImage(1,this)" />
+            <img id="img-prev-1" class="img-thumb" style="display:none;" />
+            <div id="img-placeholder-1" style="font-size:11px;color:#bbb;">Click to upload</div>
+          </div>
+          <button onclick="clearImage(1)" style="font-size:10px;color:#aaa;background:none;border:none;cursor:pointer;text-align:left;display:none;" id="img-clear-1">✕ Remove</button>
+        </div>
+        <div class="img-slot" id="img-slot-2">
+          <div class="img-slot-header">
+            <div class="field" style="flex:1;margin-bottom:4px;"><label style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#555;">Custom Image Label</label><div class="input-wrap"><input type="text" id="img-label-2" placeholder="e.g. Packaging" style="font-size:12px;" /></div></div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-bottom:4px;">
+            <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:#555;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;"><input type="checkbox" id="img-quote-2" style="accent-color:#000;" /> Include on quote</label>
+          </div>
+          <div class="img-upload-zone" onclick="document.getElementById('img-file-2').click()">
+            <input type="file" id="img-file-2" accept="image/*" onchange="loadImage(2,this)" />
+            <img id="img-prev-2" class="img-thumb" style="display:none;" />
+            <div id="img-placeholder-2" style="font-size:11px;color:#bbb;">Click to upload</div>
+          </div>
+          <button onclick="clearImage(2)" style="font-size:10px;color:#aaa;background:none;border:none;cursor:pointer;text-align:left;display:none;" id="img-clear-2">✕ Remove</button>
+        </div>
+      </div>
+    </div></div>
+
     <div class="card"><div class="card-inner">
       <div class="rule-thick"></div><div class="section-header"><span class="section-title">Pricing Target</span></div><div class="rule-thin"></div>
       <div class="fg2">
@@ -357,7 +446,10 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
     </div>
 
     <div id="ldp-hero">
-      <div id="ldp-label">Landed Duty Paid — Per Unit</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+        <div id="ldp-label" style="font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#555;">Landed Duty Paid — Per Unit</div>
+        <div id="cs-thumb-area" style="display:flex;gap:4px;"></div>
+      </div>
       <div id="ldp-value">—</div>
       <div id="ldp-divider"></div>
       <div class="meta-row"><span class="meta-label">Best Shipping Option</span><span class="meta-val" id="meta-mode">—</span></div>
@@ -442,7 +534,18 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
       <div class="data-row shade"><span class="dr-label">40ft FCL</span><span class="dr-val" id="pkg-40ft">—</span></div>
     </div>
 
-    <button class="btn" style="width:100%;flex:none;" onclick="window.print()">Print / Save as PDF</button>
+    <button class="btn primary" style="width:100%;flex:none;" onclick="printCostSheet()">Print Cost Sheet</button>
+
+    <!-- Confidential footer — hidden on screen, shown on print -->
+    <div id="cs-confidential" style="display:none;margin-top:16px;padding:10px 14px;border-top:2px solid #000;text-align:center;">
+      <span style="font-family:'Archivo',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#555;">CONFIDENTIAL — IPS Internal Use Only — Not for Distribution</span>
+    </div>
+
+    <!-- Images section for cost sheet print -->
+    <div id="cs-images-section" style="display:none;margin-top:16px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:10px;">Reference Images</div>
+      <div id="cs-images-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;"></div>
+    </div>
   </div>
 </div>
 </div>
@@ -483,6 +586,24 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
       </div>
     </div></div>
 
+    <!-- Misc Charges -->
+    <div class="card"><div class="card-inner">
+      <div class="rule-thick"></div>
+      <div class="section-header"><span class="section-title">Additional Charges</span><span class="section-right">Shown separately — not in DDP price</span></div>
+      <div class="rule-thin"></div>
+      <div style="padding-top:10px;">
+        <div style="display:grid;grid-template-columns:1fr 130px 90px 28px;gap:6px;padding-bottom:6px;border-bottom:1px solid #e8e8e8;margin-bottom:6px;">
+          <span style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#aaa;">Description</span>
+          <span style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#aaa;">Amount</span>
+          <span style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#aaa;">Type</span>
+          <span></span>
+        </div>
+        <div id="misc-charges-rows"></div>
+        <button class="btn" id="add-misc-btn" onclick="addMiscCharge()" style="margin-top:8px;width:100%;">+ Add Charge Line</button>
+        <div style="font-size:10px;color:#aaa;font-style:italic;margin-top:5px;">Up to 8 lines. Empty lines not shown on quote.</div>
+      </div>
+    </div></div>
+
     <div class="card"><div class="card-inner">
       <div class="rule-thick"></div><div class="section-header"><span class="section-title">Additional Notes</span></div><div class="rule-thin"></div>
       <div class="fg1" style="padding-top:10px;">
@@ -512,6 +633,7 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
         <div class="qp-tagline">Custom Product Development & Manufacturing</div>
         <div class="qp-tagline">customproduct.com · Boston, MA · Taiwan · China · Vietnam · Cambodia</div>
       </div>
+      <div id="qp-thumb-area" style="display:flex;align-items:center;margin-right:12px;"></div>
       <div class="qp-quote-meta">
         <div style="font-size:9px;color:#555;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">Quotation</div>
         <div class="qp-quote-num" id="qp-num">IPS-2026-0001</div>
@@ -549,9 +671,28 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
       <div class="qp-duty-note" id="qp-duty-note" style="display:none;"></div>
     </div>
 
+      <div class="qp-section" id="qp-misc-section" style="display:none">
+        <div class="qp-section-title">Additional Charges — Not Included in DDP Unit Price</div>
+        <table style="width:100%;border-collapse:collapse;margin-top:4px;">
+          <thead><tr>
+            <th style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#fff;background:#000;padding:6px 12px;text-align:left;-webkit-print-color-adjust:exact;print-color-adjust:exact;">Description</th>
+            <th style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#fff;background:#000;padding:6px 12px;text-align:right;width:200px;-webkit-print-color-adjust:exact;print-color-adjust:exact;">Amount</th>
+          </tr></thead>
+          <tbody id="qp-misc-body"></tbody>
+        </table>
+        <div style="font-size:10px;color:#888;font-style:italic;margin-top:8px;padding:6px 10px;background:#fafafa;border-left:2px solid #d0d0d0;">DDP unit prices above do not include the additional charges listed. These will be invoiced separately or as otherwise noted.</div>
+      </div>
+
     <div class="qp-section" id="qp-notes-section" style="display:none">
       <div class="qp-section-title">Notes</div>
       <div style="font-size:12px;color:#444;line-height:1.6;" id="qp-notes-text"></div>
+    </div>
+
+    <div id="qp-images-section" style="display:none;">
+      <div class="qp-section">
+        <div class="qp-section-title">Product Images</div>
+        <div id="qp-images-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px;"></div>
+      </div>
     </div>
 
     <div class="qp-tc">
@@ -824,13 +965,20 @@ function collectState(){
 function applyState(state){
   Object.keys(state).forEach(id=>{const el=$(id);if(el&&id!=='tooling_mode'&&id!=='savedAt')el.value=state[id];});
   if(state.tooling_mode){document.querySelectorAll('input[name=tooling_mode]').forEach(r=>{r.checked=r.value===state.tooling_mode;});$('tooling-units-field').style.display=state.tooling_mode==='amortize'?'':'none';}
+  updateLclCbm();
   calculate();
 }
 
 function saveScenario(){
   const state=collectState();
-  const c=(state.customer||'IPS').replace(/\s+/g,'-'),d=(state.description||'product').replace(/\s+/g,'-').substring(0,20),o=(state.origin_country||'origin').replace(/\s+/g,'-');
-  const filename=`${c} · ${d} · ${o} · ${new Date().toISOString().split('T')[0]}.json`;
+  const c=(state.customer||'IPS').replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'');
+  const d=(state.description||'product').replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'').substring(0,20);
+  const o=(state.origin_country||'origin').replace(/\s+/g,'-');
+  const dateStr=new Date().toISOString().split('T')[0];
+  const suggested=`${c} · ${d} · ${o} · ${dateStr}`;
+  const chosen=window.prompt('Save cost sheet as — edit filename if needed (no extension required):', suggested);
+  if(chosen===null) return; // user cancelled
+  const filename=(chosen.trim()||suggested)+'.json';
   const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();URL.revokeObjectURL(a.href);
 }
@@ -857,17 +1005,139 @@ function getPriceBreaks(){return pbRows.map(id=>{const q=$('pb-qty-'+id),m=$('pb
 function autoFillBreaks(){pbRows.forEach(id=>{const el=$('pb-'+id);if(el)el.remove();});pbRows=[];const m=num($('q-margin').value)||35;const u20=num($('fcl20_units').value),u40=num($('fcl40_units').value),u40hc=num($('fcl40hc_units').value);if(u20>0)addPriceBreak(u20,m);if(u40>0)addPriceBreak(u40,m);if(u40hc>0)addPriceBreak(u40hc,m);if(pbRows.length===0)addPriceBreak('','');updateQuotePreview();}
 function toggleCustomPayment(){$('custom-payment-field').style.display=$('q-payment').value==='custom'?'':'none';updateQuotePreview();}
 
+// ── Image handling ───────────────────────────────────────────────────────────
+const imgData=[null,null,null]; // base64 data for each slot
+const imgLabels=['Product Photo','Sample / Reference','Custom Image'];
+
+function loadImage(idx,input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    imgData[idx]=e.target.result;
+    const prev=$('img-prev-'+idx);
+    if(prev){prev.src=e.target.result;prev.style.display='block';}
+    const ph=$('img-placeholder-'+idx);
+    if(ph)ph.style.display='none';
+    const clr=$('img-clear-'+idx);
+    if(clr)clr.style.display='';
+    updateCsThumb();
+    updateQuotePreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateCsThumb(){
+  const area=$('cs-thumb-area');if(!area)return;
+  area.innerHTML='';
+  imgData.forEach(d=>{
+    if(!d)return;
+    const img=document.createElement('img');
+    img.src=d;img.style.cssText='width:36px;height:36px;object-fit:cover;border:1px solid #444;';
+    area.appendChild(img);
+  });
+}
+
+function clearImage(idx){
+  imgData[idx]=null;
+  const prev=$('img-prev-'+idx);if(prev){prev.src='';prev.style.display='none';}
+  const ph=$('img-placeholder-'+idx);if(ph)ph.style.display='';
+  const clr=$('img-clear-'+idx);if(clr)clr.style.display='none';
+  const fi=$('img-file-'+idx);if(fi)fi.value='';
+  updateQuotePreview();
+}
+
+function renderImagesGrid(containerId, quoteOnly){
+  const el=$(containerId);if(!el)return;
+  el.innerHTML='';
+  imgData.forEach((data,idx)=>{
+    if(!data)return;
+    if(quoteOnly&&!$('img-quote-'+idx)?.checked)return;
+    const label=idx===2?($('img-label-2')?.value||'Image 3'):imgLabels[idx];
+    const div=document.createElement('div');
+    div.style.cssText='display:flex;flex-direction:column;gap:4px;';
+    div.innerHTML='<div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#aaa;">'+label+'</div>'+
+      '<img src="'+data+'" style="width:100%;max-height:160px;object-fit:contain;border:1px solid #d0d0d0;" />';
+    el.appendChild(div);
+  });
+}
+
+// ── Misc charges ─────────────────────────────────────────────────────────────
+let miscRows=[];
+
+function addMiscCharge(desc='',amt='',type='flat'){
+  if(miscRows.length>=8)return;
+  const id='mc-'+Date.now();
+  miscRows.push(id);
+  const container=$('misc-charges-rows');
+  const row=document.createElement('div');
+  row.id='mc-row-'+id;
+  row.style.cssText='display:grid;grid-template-columns:1fr 130px 90px 28px;gap:6px;margin-bottom:6px;align-items:center;';
+  row.innerHTML=
+    '<div class="input-wrap"><input type="text" id="mc-desc-'+id+'" placeholder="e.g. Tooling — not included in unit price" value="'+desc+'" oninput="updateQuotePreview()" style="font-size:12px;" /></div>'+
+    '<div class="input-wrap"><span class="pre">$</span><input type="number" id="mc-amt-'+id+'" step="any" placeholder="0.00" value="'+amt+'" oninput="updateQuotePreview()" /></div>'+
+    '<div class="select-wrap"><select id="mc-type-'+id+'" onchange="updateQuotePreview()" style="font-size:12px;"><option value="flat"'+( type==='flat'?' selected':'')+'>Flat fee</option><option value="unit"'+( type==='unit'?' selected':'')+'>/unit</option></select><span class="select-arrow">▼</span></div>'+
+    '<button onclick="removeMiscCharge('+"'"+id+"'"+')" style="border:1px solid #c8c8c8;background:#fff;cursor:pointer;font-size:14px;color:#999;height:33px;">×</button>';
+  container.appendChild(row);
+  if(miscRows.length>=8)$('add-misc-btn').style.display='none';
+  updateQuotePreview();
+}
+
+function removeMiscCharge(id){
+  const el=$('mc-row-'+id);if(el)el.remove();
+  miscRows=miscRows.filter(r=>r!==id);
+  $('add-misc-btn').style.display='';
+  updateQuotePreview();
+}
+
+function getMiscCharges(){
+  return miscRows.map(id=>{
+    const desc=$('mc-desc-'+id)?.value||'';
+    const amt=num($('mc-amt-'+id)?.value);
+    const type=$('mc-type-'+id)?.value||'flat';
+    return{id,desc,amt,type};
+  }).filter(r=>r.desc.trim());
+}
+
+// ── Print functions ───────────────────────────────────────────────────────────
+function printCostSheet(){
+  // Build images section for print
+  renderImagesGrid('cs-images-grid', false);
+  const hasImages=imgData.some(d=>d!==null);
+  $('cs-images-section').style.display=hasImages?'block':'none';
+  document.body.classList.add('printing-costsheet');
+  document.body.classList.remove('printing-quote');
+  setTimeout(()=>{
+    window.print();
+    setTimeout(()=>{
+      document.body.classList.remove('printing-costsheet');
+      $('cs-images-section').style.display='none';
+    },1000);
+  },150);
+}
+
 function printQuote(){
-  // Ensure we are on the quote tab before printing
   switchTab('quote');
-  setTimeout(()=>window.print(), 150);
+  setTimeout(()=>{
+    document.body.classList.add('printing-quote');
+    document.body.classList.remove('printing-costsheet');
+    window.print();
+    setTimeout(()=>document.body.classList.remove('printing-quote'),1000);
+  }, 150);
 }
 
 function saveQuote(){
   const state=collectState();
   state.quote={num:$('q-num').value,date:$('q-date').value,margin:$('q-margin').value,terms:$('q-terms').value,payment:$('q-payment').value==='custom'?$('q-payment-custom').value:$('q-payment').value,validity:$('q-validity').value,preparer:$('q-preparer').value,notes:$('q-notes').value,priceBreaks:getPriceBreaks()};
-  const qnum=($('q-num').value||'quote').replace(/[^a-zA-Z0-9\-]/g,'-');
-  const filename=`QUOTE · ${qnum} · ${new Date().toISOString().split('T')[0]}.json`;
+  // Build auto-suggested filename
+  const qnum=($('q-num').value||'QUOTE').replace(/[^a-zA-Z0-9\-]/g,'-');
+  const cust=($('customer').value||'').replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'');
+  const desc=($('description').value||'').replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'').substring(0,20);
+  const dateStr=new Date().toISOString().split('T')[0];
+  const suggested=[qnum,cust,desc,dateStr].filter(Boolean).join(' · ');
+  // Prompt user — pre-filled with suggested name, editable
+  const chosen=window.prompt('Save quote as — edit filename if needed (no extension required):', suggested);
+  if(chosen===null) return; // user cancelled
+  const filename=(chosen.trim()||suggested)+'.json';
   const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();URL.revokeObjectURL(a.href);
 }
@@ -905,6 +1175,47 @@ function updateQuotePreview(){
   if(dutyNoteEl){
     dutyNoteEl.style.display='';
     dutyNoteEl.textContent='All applicable US import duties, customs fees, and tariffs are included in the DDP prices above. Pricing is based on current tariff rates in effect at the time of quotation. Should applicable duty or tariff rates change after this quote is issued, IPS reserves the right to revise pricing accordingly.';
+  }
+
+  // Misc charges
+  const charges=getMiscCharges();
+  const miscSec=$('qp-misc-section');
+  const miscBody=$('qp-misc-body');
+  if(miscSec&&miscBody){
+    if(charges.length>0){
+      miscSec.style.display='';
+      miscBody.innerHTML='';
+      charges.forEach((c,i)=>{
+        const tr=document.createElement('tr');
+        tr.style.background=i%2===0?'#fff':'#fafafa';
+        const amtStr=c.amt>0?(c.type==='unit'?fmtF(c.amt)+'/unit':'Flat fee — '+fmtF(c.amt)):'TBD';
+        tr.innerHTML='<td style="padding:6px 12px;font-size:12px;border-bottom:1px solid #f0f0f0;">'+c.desc+'</td><td style="padding:6px 12px;font-size:12px;text-align:right;font-family:Roboto Mono,monospace;border-bottom:1px solid #f0f0f0;">'+amtStr+'</td>';
+        miscBody.appendChild(tr);
+      });
+    } else { miscSec.style.display='none'; }
+  }
+
+  // Images on quote
+  const qpImgSec=$('qp-images-section');
+  const qpImgGrid=$('qp-images-grid');
+  if(qpImgSec&&qpImgGrid){
+    const hasQuoteImg=imgData.some((d,i)=>d&&$('img-quote-'+i)?.checked);
+    if(hasQuoteImg){
+      qpImgSec.style.display='';
+      renderImagesGrid('qp-images-grid',true);
+    } else { qpImgSec.style.display='none'; }
+  }
+
+  // Thumbnails in quote header
+  const thumbArea=$('qp-thumb-area');
+  if(thumbArea){
+    thumbArea.innerHTML='';
+    imgData.forEach((d,i)=>{
+      if(!d||!$('img-quote-'+i)?.checked)return;
+      const img=document.createElement('img');
+      img.src=d;img.style.cssText='width:48px;height:48px;object-fit:cover;border:1px solid #333;margin-left:6px;';
+      thumbArea.appendChild(img);
+    });
   }
 
   const notes=$('q-notes').value;
@@ -1003,6 +1314,7 @@ function onCartonQtyChange(){
     $('arr_h').value=arr.h;
   }
   onArrChange();
+  updateLclCbm();
 }
 
 function onArrChange(){
@@ -1031,7 +1343,28 @@ function onArrChange(){
 
 function onDimChange(){
   updateCartonCalc();
+  updateLclCbm();
   calculate();
+}
+
+function updateLclCbm(){
+  const pkg=estimatePackaging();
+  const orderQty=num($('order_qty').value)||0;
+  const dispEl=$('lcl_cbm_display');
+  const hiddenEl=$('lcl_cbm');
+  const totalEl=$('lcl_total_display');
+  if(!pkg||!orderQty||!dispEl) return;
+  const ctnCbm=parseFloat(pkg.carton.cbm)||0;
+  if(!ctnCbm) { if(dispEl) dispEl.textContent='—'; return; }
+  const numCartons=Math.ceil(orderQty/pkg.carton.units);
+  const totalCbm=(ctnCbm*numCartons);
+  if(dispEl) dispEl.textContent=totalCbm.toFixed(3)+' CBM';
+  if(hiddenEl) hiddenEl.value=totalCbm.toFixed(4);
+  // Update total cost display
+  const rate=num($('lcl_rate').value);
+  if(totalEl){
+    totalEl.textContent=rate>0?('$'+(totalCbm*rate).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' total'):'enter rate';
+  }
 }
 
 // 3/8" corrugated = 0.375" per wall, 2 walls per dim = 0.75" per dimension
@@ -1091,6 +1424,8 @@ function loadTestDefaults(){
   const dst=$('destination');if(dst){for(let i=0;i<dst.options.length;i++){if(dst.options[i].value==='Long Beach, CA'){dst.selectedIndex=i;break;}}}
   onArrChange();
   updateCartonCalc();
+  updateLclCbm();
+  updateCsThumb();
 }
 
 document.querySelectorAll('input:not([type=radio]):not([type=file]), select, textarea').forEach(el=>{el.addEventListener('input',()=>{calculate();updateQuotePreview();});el.addEventListener('change',()=>{calculate();updateQuotePreview();});});
