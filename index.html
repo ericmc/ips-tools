@@ -211,7 +211,7 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
   body > *:not(#cs-print-view):not(#quote-print-view) { display: none !important; }
   #cs-print-view, #quote-print-view { display: block !important; }
   .cs-print-black { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  @page { margin: 0.5in; }
+  @page { size: letter portrait; margin: 0.6in 0.65in; }
 }
 #cs-print-view { display: none; }
 #quote-print-view { display: none; }
@@ -772,52 +772,85 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
 <!-- ══ COST SHEET PRINT VIEW (hidden, only shown on print) ══════════════════ -->
 <div id="cs-print-view">
   <style>
-    #cs-print-view { font-family: 'Archivo', sans-serif; color: #111; background: #fff; }
-    .cs-header { background: #000; color: #fff; padding: 18px 28px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; }
-    .cs-header-title { font-family: 'Archivo Narrow', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; }
-    .cs-header-sub { font-size: 10px; color: #888; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px; }
-    .cs-header-right { text-align: right; }
-    .cs-doc-label { font-size: 10px; color: #666; letter-spacing: 0.14em; text-transform: uppercase; }
-    .cs-doc-date { font-family: 'Roboto Mono', monospace; font-size: 12px; color: #fff; margin-top: 3px; }
-    .cs-body { padding: 16px 28px; }
-    .cs-section { margin-bottom: 14px; border: 1px solid #d0d0d0; }
-    .cs-section-head { background: #000; color: #fff; padding: 6px 12px; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
-    .cs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
-    .cs-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; }
-    .cs-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
-    .cs-cell { padding: 6px 12px; border-right: 1px solid #e8e8e8; border-bottom: 1px solid #e8e8e8; }
-    .cs-cell:last-child { border-right: none; }
-    .cs-cell-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #aaa; margin-bottom: 2px; }
-    .cs-cell-val { font-family: 'Roboto Mono', monospace; font-size: 12px; color: #111; }
-    .cs-row { display: flex; justify-content: space-between; padding: 5px 12px; border-bottom: 1px solid #f0f0f0; font-size: 12px; }
-    .cs-row:last-child { border-bottom: none; }
-    .cs-row.shade { background: #f6f6f6; }
-    .cs-row.total { border-top: 2px solid #000; font-weight: 700; background: #f6f6f6; }
-    .cs-row.warn { background: #fffbf0; border-left: 2px solid #e0a800; }
-    .cs-row-label { color: #333; }
-    .cs-row-label.indent { padding-left: 14px; color: #666; }
-    .cs-row-label.muted { color: #999; font-style: italic; }
-    .cs-row-val { font-family: 'Roboto Mono', monospace; color: #111; }
-    .cs-subhead { padding: 5px 12px 3px; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #aaa; background: #fafafa; border-bottom: 1px solid #e8e8e8; }
-    .cs-ship-row { display: grid; grid-template-columns: 120px 1fr 100px 80px; padding: 5px 12px; border-bottom: 1px solid #f0f0f0; font-size: 12px; align-items: center; }
-    .cs-ship-row.best { background: #f8f8f8; border-left: 3px solid #000; }
-    .cs-ship-best-badge { font-size: 9px; font-weight: 700; background: #000; color: #fff; padding: 1px 5px; text-transform: uppercase; letter-spacing: 0.06em; }
-    .cs-partial-badge { font-size: 9px; background: #fff3cd; color: #856404; padding: 1px 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-left: 4px; }
-    .cs-hero { background: #000; color: #fff; padding: 14px 28px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-bottom: 14px; }
-    .cs-hero-item { padding: 0 16px; border-right: 1px solid #333; }
+    @page { size: letter portrait; margin: 0.6in 0.65in; }
+    * { box-sizing: border-box; }
+    #cs-print-view { font-family: 'Archivo', sans-serif; color: #111; background: #fff; width: 100%; }
+
+    /* ── Page break rules ── */
+    .cs-section { break-inside: avoid; page-break-inside: avoid; }
+    .cs-subhead + .cs-row { break-before: avoid; page-break-before: avoid; }
+    .cs-section-head { break-after: avoid; page-break-after: avoid; }
+    .cs-hero { break-after: avoid; page-break-after: avoid; }
+    .cs-two-col-right > .cs-section { break-inside: avoid; page-break-inside: avoid; }
+
+    /* ── Header ── */
+    .cs-header { background: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0; }
+    .cs-header-title { font-family: 'Archivo Narrow', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; }
+    .cs-header-sub { font-size: 9px; color: #888; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px; }
+    .cs-doc-label { font-size: 9px; color: #666; letter-spacing: 0.14em; text-transform: uppercase; text-align: right; }
+    .cs-doc-date { font-family: 'Roboto Mono', monospace; font-size: 11px; color: #fff; margin-top: 2px; text-align: right; }
+    .cs-doc-id { font-size: 9px; color: #555; margin-top: 2px; text-align: right; }
+
+    /* ── Hero ── */
+    .cs-hero { background: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #fff; padding: 10px 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-bottom: 10px; break-inside: avoid; }
+    .cs-hero-item { padding: 0 14px; border-right: 1px solid #333; }
     .cs-hero-item:first-child { padding-left: 0; }
     .cs-hero-item:last-child { border-right: none; }
-    .cs-hero-label { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
-    .cs-hero-val { font-family: 'Archivo Narrow', sans-serif; font-size: 28px; font-weight: 700; color: #fff; line-height: 1; }
-    .cs-hero-sub { font-family: 'Roboto Mono', monospace; font-size: 11px; color: #888; margin-top: 3px; }
-    .cs-confidential { text-align: center; padding: 10px; border-top: 2px solid #000; margin-top: 16px; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #666; }
-    .cs-images { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 12px; }
-    .cs-img-item { display: flex; flex-direction: column; gap: 4px; }
-    .cs-img-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #aaa; }
-    .cs-img-item img { width: 100%; max-height: 140px; object-fit: contain; border: 1px solid #d0d0d0; }
-    .cs-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .cs-misc-row { display: flex; justify-content: space-between; padding: 5px 12px; border-bottom: 1px solid #f0f0f0; font-size: 12px; }
-    .cs-misc-note { font-size: 10px; color: #888; font-style: italic; padding: 6px 12px; background: #fafafa; }
+    .cs-hero-label { font-size: 8px; color: #666; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+    .cs-hero-val { font-family: 'Archivo Narrow', sans-serif; font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+    .cs-hero-sub { font-family: 'Roboto Mono', monospace; font-size: 9px; color: #888; margin-top: 2px; }
+
+    /* ── Body ── */
+    .cs-body { padding: 0; }
+
+    /* ── Two column layout ── */
+    .cs-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0; }
+    .cs-two-col-left { display: flex; flex-direction: column; gap: 10px; }
+    .cs-two-col-right { display: flex; flex-direction: column; gap: 10px; }
+
+    /* ── Sections ── */
+    .cs-section { border: 1px solid #d0d0d0; margin-bottom: 10px; break-inside: avoid; page-break-inside: avoid; }
+    .cs-section-head { background: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #fff; padding: 5px 10px; font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; break-after: avoid; }
+    .cs-subhead { padding: 4px 10px 2px; font-size: 8px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #aaa; background: #fafafa; border-bottom: 1px solid #e8e8e8; break-after: avoid; }
+
+    /* ── Grid cells ── */
+    .cs-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; }
+    .cs-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+    .cs-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+    .cs-cell { padding: 4px 10px; border-right: 1px solid #ebebeb; border-bottom: 1px solid #ebebeb; }
+    .cs-cell:last-child { border-right: none; }
+    .cs-cell-label { font-size: 8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #aaa; margin-bottom: 1px; }
+    .cs-cell-val { font-family: 'Roboto Mono', monospace; font-size: 11px; color: #111; }
+
+    /* ── Data rows ── */
+    .cs-row { display: flex; justify-content: space-between; padding: 3px 10px; border-bottom: 1px solid #f0f0f0; font-size: 11px; break-inside: avoid; }
+    .cs-row:last-child { border-bottom: none; }
+    .cs-row.shade { background: #f6f6f6; }
+    .cs-row.total { border-top: 2px solid #000; font-weight: 700; background: #f6f6f6; break-before: avoid; }
+    .cs-row.warn { background: #fffbf0; border-left: 2px solid #e0a800; }
+    .cs-row-label { color: #333; }
+    .cs-row-label.indent { padding-left: 12px; color: #666; font-size: 10px; }
+    .cs-row-label.muted { color: #999; font-style: italic; font-size: 10px; }
+    .cs-row-val { font-family: 'Roboto Mono', monospace; color: #111; }
+
+    /* ── Shipping rows ── */
+    .cs-ship-row { display: grid; grid-template-columns: 110px 1fr 90px 60px; padding: 4px 10px; border-bottom: 1px solid #f0f0f0; font-size: 11px; align-items: center; break-inside: avoid; }
+    .cs-ship-row.best { background: #f8f8f8 !important; border-left: 3px solid #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .cs-ship-best-badge { font-size: 8px; font-weight: 700; background: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #fff; padding: 1px 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .cs-partial-badge { font-size: 8px; background: #fff3cd !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #856404; padding: 1px 3px; font-weight: 700; text-transform: uppercase; margin-left: 4px; }
+
+    /* ── Images ── */
+    .cs-images { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px; }
+    .cs-img-item { display: flex; flex-direction: column; gap: 3px; break-inside: avoid; }
+    .cs-img-label { font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #aaa; }
+    .cs-img-item img { width: 100%; max-height: 120px; object-fit: contain; border: 1px solid #d0d0d0; }
+
+    /* ── Misc charges ── */
+    .cs-misc-row { display: flex; justify-content: space-between; padding: 4px 10px; border-bottom: 1px solid #f0f0f0; font-size: 11px; break-inside: avoid; }
+    .cs-misc-note { font-size: 9px; color: #888; font-style: italic; padding: 4px 10px; background: #fafafa; }
+
+    /* ── Confidential footer ── */
+    .cs-confidential { text-align: center; padding: 8px; border-top: 2px solid #000; margin-top: 10px; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #666; break-before: avoid; }
   </style>
 
   <!-- Header -->
@@ -854,12 +887,11 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
       </div>
     </div>
 
+    <!-- Row 1: Customer & Product + Input Summary side by side -->
     <div class="cs-two-col">
-      <!-- Left column -->
       <div>
-        <!-- Customer & Product -->
         <div class="cs-section">
-          <div class="cs-section-head cs-print-black">Customer & Product</div>
+          <div class="cs-section-head">Customer & Product</div>
           <div class="cs-grid-2">
             <div class="cs-cell"><div class="cs-cell-label">Customer</div><div class="cs-cell-val" id="csp-customer">—</div></div>
             <div class="cs-cell"><div class="cs-cell-label">SKU / Item No.</div><div class="cs-cell-val" id="csp-sku">—</div></div>
@@ -869,71 +901,35 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
             <div class="cs-cell"><div class="cs-cell-label">Final Destination</div><div class="cs-cell-val" id="csp-dest">—</div></div>
           </div>
         </div>
-
-        <!-- Cost Breakdown -->
-        <div class="cs-section">
-          <div class="cs-section-head cs-print-black">Cost Breakdown / Unit</div>
-          <div class="cs-subhead">Origin</div>
-          <div class="cs-row"><span class="cs-row-label">FOB Cost (total)</span><span class="cs-row-val" id="csp-fob">—</span></div>
-          <div class="cs-row" id="csp-mgmt-row"><span class="cs-row-label indent" id="csp-mgmt-label">Mgmt / Agency Fee</span><span class="cs-row-val" id="csp-mgmt">—</span></div>
-          <div class="cs-row" id="csp-dutiable-row"><span class="cs-row-label indent">Dutiable FOB (net of fee)</span><span class="cs-row-val" id="csp-dutiable">—</span></div>
-          <div class="cs-row"><span class="cs-row-label indent">Tooling (amortized)</span><span class="cs-row-val" id="csp-tooling">—</span></div>
-          <div class="cs-row"><span class="cs-row-label indent">Inspection</span><span class="cs-row-val" id="csp-inspection">—</span></div>
-          <div class="cs-row"><span class="cs-row-label indent">Other Origin</span><span class="cs-row-val" id="csp-other-origin">—</span></div>
-          <div class="cs-subhead">Ocean Freight & Insurance</div>
-          <div class="cs-row"><span class="cs-row-label">Ocean Freight</span><span class="cs-row-val" id="csp-freight">—</span></div>
-          <div class="cs-row"><span class="cs-row-label indent">Marine Insurance</span><span class="cs-row-val" id="csp-insurance">—</span></div>
-          <div class="cs-row shade"><span class="cs-row-label">CIF Value</span><span class="cs-row-val" id="csp-cif">—</span></div>
-          <div class="cs-subhead">Duties & Customs</div>
-          <div class="cs-row warn" id="csp-duty-note-row"><span class="cs-row-label muted">Duty based on dutiable FOB (excl. mgmt fee)</span><span class="cs-row-val"></span></div>
-          <div class="cs-row"><span class="cs-row-label" id="csp-duty-label">HTS Duty</span><span class="cs-row-val" id="csp-duty">—</span></div>
-          <div class="cs-row"><span class="cs-row-label indent" id="csp-301-label">Section 301</span><span class="cs-row-val" id="csp-301">—</span></div>
-          <div class="cs-row"><span class="cs-row-label indent" id="csp-ieepa-label">IEEPA</span><span class="cs-row-val" id="csp-ieepa">—</span></div>
-          <div class="cs-row"><span class="cs-row-label indent">MPF (0.3464%)</span><span class="cs-row-val" id="csp-mpf">—</span></div>
-          <div class="cs-row"><span class="cs-row-label indent">HMF (0.125%)</span><span class="cs-row-val" id="csp-hmf">—</span></div>
-          <div class="cs-row"><span class="cs-row-label indent">Customs Broker</span><span class="cs-row-val" id="csp-broker">—</span></div>
-          <div class="cs-row shade"><span class="cs-row-label">Total Duties & Fees</span><span class="cs-row-val" id="csp-duties-total">—</span></div>
-          <div class="cs-subhead">US Destination</div>
-          <div class="cs-row"><span class="cs-row-label">Inland Freight</span><span class="cs-row-val" id="csp-inland">—</span></div>
-          <div class="cs-row"><span class="cs-row-label indent">Warehousing / 3PL</span><span class="cs-row-val" id="csp-warehouse">—</span></div>
-          <div class="cs-row"><span class="cs-row-label indent">Other Destination</span><span class="cs-row-val" id="csp-other-dest">—</span></div>
-          <div class="cs-row total"><span class="cs-row-label">LANDED DUTY PAID / UNIT</span><span class="cs-row-val" id="csp-ldp-total">—</span></div>
-        </div>
-
-        <!-- Tooling callout if excluded -->
-        <div class="cs-section" id="csp-tooling-section" style="display:none;">
-          <div class="cs-section-head cs-print-black">Tooling — Excluded from LDP</div>
-          <div class="cs-row"><span class="cs-row-label">Total Tooling Cost</span><span class="cs-row-val" id="csp-tooling-total">—</span></div>
-          <div class="cs-row"><span class="cs-row-label">True Unit Cost (LDP + tooling payback)</span><span class="cs-row-val" id="csp-tooling-true">—</span></div>
-        </div>
       </div>
-
-      <!-- Right column -->
       <div>
-        <!-- Shipping Comparison -->
         <div class="cs-section">
-          <div class="cs-section-head cs-print-black">Shipping Comparison — LDP / Unit</div>
-          <div id="csp-ship-rows"></div>
-        </div>
-
-        <!-- Input Summary -->
-        <div class="cs-section">
-          <div class="cs-section-head cs-print-black">Input Summary — Duty Rates Used</div>
+          <div class="cs-section-head">Duty Rates & Key Inputs</div>
           <div class="cs-grid-2">
             <div class="cs-cell"><div class="cs-cell-label">HTS Base Duty</div><div class="cs-cell-val" id="csp-in-duty">—</div></div>
             <div class="cs-cell"><div class="cs-cell-label">Section 301</div><div class="cs-cell-val" id="csp-in-301">—</div></div>
             <div class="cs-cell"><div class="cs-cell-label">IEEPA Adder</div><div class="cs-cell-val" id="csp-in-ieepa">—</div></div>
             <div class="cs-cell"><div class="cs-cell-label">Effective Duty on FOB</div><div class="cs-cell-val" id="csp-in-effduty">—</div></div>
             <div class="cs-cell"><div class="cs-cell-label">Mgmt / Agency Fee</div><div class="cs-cell-val" id="csp-in-mgmt">—</div></div>
-            <div class="cs-cell"><div class="cs-cell-label">Broker Fee</div><div class="cs-cell-val" id="csp-in-broker">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Customs Broker</div><div class="cs-cell-val" id="csp-in-broker">—</div></div>
             <div class="cs-cell"><div class="cs-cell-label">Inland Freight</div><div class="cs-cell-val" id="csp-in-inland">—</div></div>
             <div class="cs-cell"><div class="cs-cell-label">Insurance Rate</div><div class="cs-cell-val" id="csp-in-insurance">—</div></div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Packaging -->
+    <!-- Row 2: Shipping Comparison + Packaging side by side -->
+    <div class="cs-two-col">
+      <div>
+        <div class="cs-section">
+          <div class="cs-section-head">Shipping Comparison — LDP / Unit</div>
+          <div id="csp-ship-rows"></div>
+        </div>
+      </div>
+      <div>
         <div class="cs-section" id="csp-pkg-section">
-          <div class="cs-section-head cs-print-black">Packaging & Container</div>
+          <div class="cs-section-head">Packaging & Container</div>
           <div class="cs-subhead">Export Carton</div>
           <div class="cs-grid-2">
             <div class="cs-cell"><div class="cs-cell-label">Dimensions</div><div class="cs-cell-val" id="csp-ctn-dims">—</div></div>
@@ -954,14 +950,57 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
             <div class="cs-cell"><div class="cs-cell-label">40ft FCL</div><div class="cs-cell-val" id="csp-40ft">—</div></div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Misc charges if any -->
-        <div class="cs-section" id="csp-misc-section" style="display:none;">
-          <div class="cs-section-head cs-print-black">Additional Charges (Reference)</div>
-          <div id="csp-misc-body"></div>
-          <div class="cs-misc-note">Amounts shown for reference. TBD fields to be confirmed at order.</div>
+    <!-- Row 3: Full width Cost Breakdown -->
+    <div class="cs-section">
+      <div class="cs-section-head">Cost Breakdown / Unit</div>
+      <div class="cs-two-col" style="gap:0;">
+        <div style="border-right:1px solid #e0e0e0;">
+          <div class="cs-subhead">Origin Costs</div>
+          <div class="cs-row"><span class="cs-row-label">FOB Cost (total)</span><span class="cs-row-val" id="csp-fob">—</span></div>
+          <div class="cs-row" id="csp-mgmt-row"><span class="cs-row-label indent" id="csp-mgmt-label">Mgmt / Agency Fee</span><span class="cs-row-val" id="csp-mgmt">—</span></div>
+          <div class="cs-row" id="csp-dutiable-row"><span class="cs-row-label indent">Dutiable FOB (net of fee)</span><span class="cs-row-val" id="csp-dutiable">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Tooling (amortized)</span><span class="cs-row-val" id="csp-tooling">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Inspection</span><span class="cs-row-val" id="csp-inspection">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Other Origin</span><span class="cs-row-val" id="csp-other-origin">—</span></div>
+          <div class="cs-subhead">Ocean Freight & Insurance</div>
+          <div class="cs-row"><span class="cs-row-label">Ocean Freight</span><span class="cs-row-val" id="csp-freight">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Marine Insurance</span><span class="cs-row-val" id="csp-insurance">—</span></div>
+          <div class="cs-row shade"><span class="cs-row-label">CIF Value</span><span class="cs-row-val" id="csp-cif">—</span></div>
+        </div>
+        <div>
+          <div class="cs-subhead">Duties & Customs</div>
+          <div class="cs-row warn" id="csp-duty-note-row"><span class="cs-row-label muted">Duty on dutiable FOB (excl. mgmt fee)</span><span class="cs-row-val"></span></div>
+          <div class="cs-row"><span class="cs-row-label" id="csp-duty-label">HTS Duty</span><span class="cs-row-val" id="csp-duty">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent" id="csp-301-label">Section 301</span><span class="cs-row-val" id="csp-301">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent" id="csp-ieepa-label">IEEPA</span><span class="cs-row-val" id="csp-ieepa">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">MPF (0.3464%)</span><span class="cs-row-val" id="csp-mpf">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">HMF (0.125%)</span><span class="cs-row-val" id="csp-hmf">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Customs Broker</span><span class="cs-row-val" id="csp-broker">—</span></div>
+          <div class="cs-row shade"><span class="cs-row-label">Total Duties & Fees</span><span class="cs-row-val" id="csp-duties-total">—</span></div>
+          <div class="cs-subhead">US Destination</div>
+          <div class="cs-row"><span class="cs-row-label">Inland Freight</span><span class="cs-row-val" id="csp-inland">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Warehousing / 3PL</span><span class="cs-row-val" id="csp-warehouse">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Other Destination</span><span class="cs-row-val" id="csp-other-dest">—</span></div>
         </div>
       </div>
+      <div class="cs-row total" style="border-top:2px solid #000;"><span class="cs-row-label">LANDED DUTY PAID / UNIT</span><span class="cs-row-val" id="csp-ldp-total">—</span></div>
+    </div>
+
+    <!-- Tooling callout if excluded -->
+    <div class="cs-section" id="csp-tooling-section" style="display:none;">
+      <div class="cs-section-head">Tooling — Excluded from LDP</div>
+      <div class="cs-row"><span class="cs-row-label">Total Tooling Cost</span><span class="cs-row-val" id="csp-tooling-total">—</span></div>
+      <div class="cs-row"><span class="cs-row-label">True Unit Cost (LDP + tooling payback)</span><span class="cs-row-val" id="csp-tooling-true">—</span></div>
+    </div>
+
+    <!-- Misc charges if any -->
+    <div class="cs-section" id="csp-misc-section" style="display:none;">
+      <div class="cs-section-head">Additional Charges (Reference)</div>
+      <div id="csp-misc-body"></div>
+      <div class="cs-misc-note">Amounts shown for reference. TBD fields to be confirmed at order.</div>
     </div>
 
     <!-- Images -->
