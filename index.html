@@ -47,6 +47,59 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
 .select-arrow { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #888; font-size: 10px; }
 .hint { font-size: 10px; color: #aaa; font-style: italic; }
 .hint.imp { color: #777; font-style: normal; background: #f8f8f8; border-left: 2px solid #ccc; padding: 4px 8px; margin-top: 2px; }
+/* Cost Sheet Print View */
+#cs-print-view { display: none; }
+@media print {
+  body.printing-costsheet * { visibility: hidden; }
+  body.printing-costsheet #cs-print-view,
+  body.printing-costsheet #cs-print-view * { visibility: visible; }
+  body.printing-costsheet #cs-print-view { display: block !important; position: fixed; top: 0; left: 0; width: 100%; }
+  body.printing-costsheet #header,
+  body.printing-costsheet #tab-nav,
+  body.printing-costsheet #tab-calculator,
+  body.printing-costsheet #tab-quote,
+  body.printing-costsheet #tab-compare { display: none !important; }
+  @page { size: A4 landscape; margin: 12mm; }
+}
+.cs-doc { font-family: 'Archivo', sans-serif; background: #fff; color: #111; max-width: 100%; }
+.cs-header { background: #000; color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: flex-start; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.cs-header-left .cs-company { font-family: 'Archivo Narrow', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; }
+.cs-header-left .cs-sub { font-size: 10px; color: #666; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 3px; }
+.cs-header-right { text-align: right; }
+.cs-header-right .cs-doc-title { font-size: 10px; color: #666; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; }
+.cs-header-right .cs-doc-id { font-family: 'Roboto Mono', monospace; font-size: 13px; color: #fff; }
+.cs-header-right .cs-doc-date { font-size: 10px; color: #666; margin-top: 2px; }
+.cs-body { padding: 0; }
+.cs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.cs-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+.cs-section { border-bottom: 1px solid #e8e8e8; padding: 10px 16px; }
+.cs-section-title { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #aaa; margin-bottom: 8px; }
+.cs-field { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
+.cs-field-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #aaa; }
+.cs-field-value { font-family: 'Roboto Mono', monospace; font-size: 12px; color: #111; }
+.cs-table { width: 100%; border-collapse: collapse; }
+.cs-table th { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: #000; color: #fff; padding: 6px 10px; text-align: left; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.cs-table th.right { text-align: right; }
+.cs-table td { padding: 5px 10px; font-size: 11px; border-bottom: 1px solid #f0f0f0; }
+.cs-table td.mono { font-family: 'Roboto Mono', monospace; }
+.cs-table td.right { text-align: right; font-family: 'Roboto Mono', monospace; }
+.cs-table tr.shade td { background: #f6f6f6; }
+.cs-table tr.bold td { font-weight: 700; border-top: 1px solid #000; }
+.cs-table tr.best td { background: #f8f8f8; font-weight: 700; }
+.cs-ldp-hero { background: #000; color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: flex-start; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.cs-ldp-value { font-family: 'Archivo Narrow', sans-serif; font-size: 42px; font-weight: 700; color: #fff; line-height: 1; }
+.cs-ldp-meta { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+.cs-ldp-meta-row { display: flex; gap: 12px; align-items: baseline; }
+.cs-ldp-meta-label { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 0.08em; }
+.cs-ldp-meta-val { font-family: 'Roboto Mono', monospace; font-size: 12px; color: #fff; }
+.cs-confidential { text-align: center; padding: 10px; border-top: 2px solid #000; margin-top: 8px; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #555; }
+.cs-images-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 12px 16px; }
+.cs-image-item { display: flex; flex-direction: column; gap: 4px; }
+.cs-image-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #aaa; }
+.cs-image-item img { width: 100%; max-height: 140px; object-fit: contain; border: 1px solid #d0d0d0; }
+.cs-badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 6px; text-transform: uppercase; letter-spacing: 0.06em; }
+.cs-badge-best { background: #000; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.cs-badge-partial { background: #fff3cd; color: #856404; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .img-upload-zone { border: 1.5px dashed #c8c8c8; padding: 12px; text-align: center; cursor: pointer; transition: border-color 0.15s; background: #fafafa; }
 .img-upload-zone:hover { border-color: #000; }
 .img-upload-zone input[type=file] { display: none; }
@@ -155,38 +208,13 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
 .qp-footer-item span { color: #555; font-weight: 600; }
 @media (max-width: 1000px) { #main, #quote-panel { grid-template-columns: 1fr; } #results { order: -1; } .fg3 { grid-template-columns: repeat(2,1fr); } .compare-load-area { grid-template-columns: 1fr; } }
 @media print {
-  body { background: #fff; }
+  body > *:not(#cs-print-view):not(#quote-print-view) { display: none !important; }
+  #cs-print-view, #quote-print-view { display: block !important; }
+  .cs-print-black { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  @page { margin: 0.5in; }
 }
-@media print and (orientation: portrait) {
-  /* Quote print — portrait, quote preview only */
-  body.printing-quote #header,
-  body.printing-quote #tab-nav,
-  body.printing-quote #tab-calculator,
-  body.printing-quote #tab-compare { display: none !important; }
-  body.printing-quote #tab-quote { display: block !important; }
-  body.printing-quote #quote-inputs-panel { display: none !important; }
-  body.printing-quote #quote-preview-wrapper { display: block !important; width: 100% !important; }
-  body.printing-quote #quote-preview { border: none !important; }
-  body.printing-quote .qp-preview-label { display: none !important; }
-  body.printing-quote .qp-print-btn-wrapper { display: none !important; }
-  body.printing-quote #quote-panel { display: block !important; padding: 0 !important; }
-  .qp-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .qp-price-table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-}
-@media print and (orientation: landscape) {
-  /* Cost Sheet print — landscape, full calculator content */
-  body.printing-costsheet #header { display: block !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  body.printing-costsheet #tab-nav { display: none !important; }
-  body.printing-costsheet #tab-quote,
-  body.printing-costsheet #tab-compare { display: none !important; }
-  body.printing-costsheet #tab-calculator { display: block !important; }
-  body.printing-costsheet #main { grid-template-columns: 1fr 360px !important; gap: 10px !important; padding: 10px !important; }
-  body.printing-costsheet .action-bar { display: none !important; }
-  body.printing-costsheet #ldp-hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  body.printing-costsheet .result-card-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  body.printing-costsheet #cs-confidential { display: block !important; }
-  body.printing-costsheet #cs-images-section { display: block !important; }
-}
+#cs-print-view { display: none; }
+#quote-print-view { display: none; }
 #cs-confidential { display: none; }
 </style>
 </head>
@@ -740,6 +768,213 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
 </div>
 </div>
 
+
+<!-- ══ COST SHEET PRINT VIEW (hidden, only shown on print) ══════════════════ -->
+<div id="cs-print-view">
+  <style>
+    #cs-print-view { font-family: 'Archivo', sans-serif; color: #111; background: #fff; }
+    .cs-header { background: #000; color: #fff; padding: 18px 28px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; }
+    .cs-header-title { font-family: 'Archivo Narrow', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; }
+    .cs-header-sub { font-size: 10px; color: #888; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px; }
+    .cs-header-right { text-align: right; }
+    .cs-doc-label { font-size: 10px; color: #666; letter-spacing: 0.14em; text-transform: uppercase; }
+    .cs-doc-date { font-family: 'Roboto Mono', monospace; font-size: 12px; color: #fff; margin-top: 3px; }
+    .cs-body { padding: 16px 28px; }
+    .cs-section { margin-bottom: 14px; border: 1px solid #d0d0d0; }
+    .cs-section-head { background: #000; color: #fff; padding: 6px 12px; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+    .cs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+    .cs-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; }
+    .cs-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+    .cs-cell { padding: 6px 12px; border-right: 1px solid #e8e8e8; border-bottom: 1px solid #e8e8e8; }
+    .cs-cell:last-child { border-right: none; }
+    .cs-cell-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #aaa; margin-bottom: 2px; }
+    .cs-cell-val { font-family: 'Roboto Mono', monospace; font-size: 12px; color: #111; }
+    .cs-row { display: flex; justify-content: space-between; padding: 5px 12px; border-bottom: 1px solid #f0f0f0; font-size: 12px; }
+    .cs-row:last-child { border-bottom: none; }
+    .cs-row.shade { background: #f6f6f6; }
+    .cs-row.total { border-top: 2px solid #000; font-weight: 700; background: #f6f6f6; }
+    .cs-row.warn { background: #fffbf0; border-left: 2px solid #e0a800; }
+    .cs-row-label { color: #333; }
+    .cs-row-label.indent { padding-left: 14px; color: #666; }
+    .cs-row-label.muted { color: #999; font-style: italic; }
+    .cs-row-val { font-family: 'Roboto Mono', monospace; color: #111; }
+    .cs-subhead { padding: 5px 12px 3px; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #aaa; background: #fafafa; border-bottom: 1px solid #e8e8e8; }
+    .cs-ship-row { display: grid; grid-template-columns: 120px 1fr 100px 80px; padding: 5px 12px; border-bottom: 1px solid #f0f0f0; font-size: 12px; align-items: center; }
+    .cs-ship-row.best { background: #f8f8f8; border-left: 3px solid #000; }
+    .cs-ship-best-badge { font-size: 9px; font-weight: 700; background: #000; color: #fff; padding: 1px 5px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .cs-partial-badge { font-size: 9px; background: #fff3cd; color: #856404; padding: 1px 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-left: 4px; }
+    .cs-hero { background: #000; color: #fff; padding: 14px 28px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-bottom: 14px; }
+    .cs-hero-item { padding: 0 16px; border-right: 1px solid #333; }
+    .cs-hero-item:first-child { padding-left: 0; }
+    .cs-hero-item:last-child { border-right: none; }
+    .cs-hero-label { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+    .cs-hero-val { font-family: 'Archivo Narrow', sans-serif; font-size: 28px; font-weight: 700; color: #fff; line-height: 1; }
+    .cs-hero-sub { font-family: 'Roboto Mono', monospace; font-size: 11px; color: #888; margin-top: 3px; }
+    .cs-confidential { text-align: center; padding: 10px; border-top: 2px solid #000; margin-top: 16px; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #666; }
+    .cs-images { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 12px; }
+    .cs-img-item { display: flex; flex-direction: column; gap: 4px; }
+    .cs-img-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #aaa; }
+    .cs-img-item img { width: 100%; max-height: 140px; object-fit: contain; border: 1px solid #d0d0d0; }
+    .cs-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .cs-misc-row { display: flex; justify-content: space-between; padding: 5px 12px; border-bottom: 1px solid #f0f0f0; font-size: 12px; }
+    .cs-misc-note { font-size: 10px; color: #888; font-style: italic; padding: 6px 12px; background: #fafafa; }
+  </style>
+
+  <!-- Header -->
+  <div class="cs-header cs-print-black">
+    <div>
+      <div class="cs-header-title">International Product Solutions</div>
+      <div class="cs-header-sub">Cost Sheet — Confidential Internal Document</div>
+    </div>
+    <div class="cs-header-right">
+      <div class="cs-doc-label">Cost Sheet</div>
+      <div class="cs-doc-date" id="csp-date"></div>
+      <div style="font-size:10px;color:#666;margin-top:2px;" id="csp-identity"></div>
+    </div>
+  </div>
+
+  <div class="cs-body">
+
+    <!-- Hero summary -->
+    <div class="cs-hero cs-print-black">
+      <div class="cs-hero-item">
+        <div class="cs-hero-label">Landed Duty Paid / Unit</div>
+        <div class="cs-hero-val" id="csp-ldp">—</div>
+        <div class="cs-hero-sub" id="csp-mode">—</div>
+      </div>
+      <div class="cs-hero-item">
+        <div class="cs-hero-label">Min Sell @ <span id="csp-margin-label">—</span>% GM</div>
+        <div class="cs-hero-val" id="csp-sell">—</div>
+        <div class="cs-hero-sub" id="csp-duty-eff">Eff. duty: —</div>
+      </div>
+      <div class="cs-hero-item">
+        <div class="cs-hero-label">Target Retail</div>
+        <div class="cs-hero-val" id="csp-retail">—</div>
+        <div class="cs-hero-sub" id="csp-origin-dest">—</div>
+      </div>
+    </div>
+
+    <div class="cs-two-col">
+      <!-- Left column -->
+      <div>
+        <!-- Customer & Product -->
+        <div class="cs-section">
+          <div class="cs-section-head cs-print-black">Customer & Product</div>
+          <div class="cs-grid-2">
+            <div class="cs-cell"><div class="cs-cell-label">Customer</div><div class="cs-cell-val" id="csp-customer">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">SKU / Item No.</div><div class="cs-cell-val" id="csp-sku">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Description</div><div class="cs-cell-val" id="csp-desc">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Order Quantity</div><div class="cs-cell-val" id="csp-qty">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Country of Origin</div><div class="cs-cell-val" id="csp-origin">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Final Destination</div><div class="cs-cell-val" id="csp-dest">—</div></div>
+          </div>
+        </div>
+
+        <!-- Cost Breakdown -->
+        <div class="cs-section">
+          <div class="cs-section-head cs-print-black">Cost Breakdown / Unit</div>
+          <div class="cs-subhead">Origin</div>
+          <div class="cs-row"><span class="cs-row-label">FOB Cost (total)</span><span class="cs-row-val" id="csp-fob">—</span></div>
+          <div class="cs-row" id="csp-mgmt-row"><span class="cs-row-label indent" id="csp-mgmt-label">Mgmt / Agency Fee</span><span class="cs-row-val" id="csp-mgmt">—</span></div>
+          <div class="cs-row" id="csp-dutiable-row"><span class="cs-row-label indent">Dutiable FOB (net of fee)</span><span class="cs-row-val" id="csp-dutiable">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Tooling (amortized)</span><span class="cs-row-val" id="csp-tooling">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Inspection</span><span class="cs-row-val" id="csp-inspection">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Other Origin</span><span class="cs-row-val" id="csp-other-origin">—</span></div>
+          <div class="cs-subhead">Ocean Freight & Insurance</div>
+          <div class="cs-row"><span class="cs-row-label">Ocean Freight</span><span class="cs-row-val" id="csp-freight">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Marine Insurance</span><span class="cs-row-val" id="csp-insurance">—</span></div>
+          <div class="cs-row shade"><span class="cs-row-label">CIF Value</span><span class="cs-row-val" id="csp-cif">—</span></div>
+          <div class="cs-subhead">Duties & Customs</div>
+          <div class="cs-row warn" id="csp-duty-note-row"><span class="cs-row-label muted">Duty based on dutiable FOB (excl. mgmt fee)</span><span class="cs-row-val"></span></div>
+          <div class="cs-row"><span class="cs-row-label" id="csp-duty-label">HTS Duty</span><span class="cs-row-val" id="csp-duty">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent" id="csp-301-label">Section 301</span><span class="cs-row-val" id="csp-301">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent" id="csp-ieepa-label">IEEPA</span><span class="cs-row-val" id="csp-ieepa">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">MPF (0.3464%)</span><span class="cs-row-val" id="csp-mpf">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">HMF (0.125%)</span><span class="cs-row-val" id="csp-hmf">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Customs Broker</span><span class="cs-row-val" id="csp-broker">—</span></div>
+          <div class="cs-row shade"><span class="cs-row-label">Total Duties & Fees</span><span class="cs-row-val" id="csp-duties-total">—</span></div>
+          <div class="cs-subhead">US Destination</div>
+          <div class="cs-row"><span class="cs-row-label">Inland Freight</span><span class="cs-row-val" id="csp-inland">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Warehousing / 3PL</span><span class="cs-row-val" id="csp-warehouse">—</span></div>
+          <div class="cs-row"><span class="cs-row-label indent">Other Destination</span><span class="cs-row-val" id="csp-other-dest">—</span></div>
+          <div class="cs-row total"><span class="cs-row-label">LANDED DUTY PAID / UNIT</span><span class="cs-row-val" id="csp-ldp-total">—</span></div>
+        </div>
+
+        <!-- Tooling callout if excluded -->
+        <div class="cs-section" id="csp-tooling-section" style="display:none;">
+          <div class="cs-section-head cs-print-black">Tooling — Excluded from LDP</div>
+          <div class="cs-row"><span class="cs-row-label">Total Tooling Cost</span><span class="cs-row-val" id="csp-tooling-total">—</span></div>
+          <div class="cs-row"><span class="cs-row-label">True Unit Cost (LDP + tooling payback)</span><span class="cs-row-val" id="csp-tooling-true">—</span></div>
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div>
+        <!-- Shipping Comparison -->
+        <div class="cs-section">
+          <div class="cs-section-head cs-print-black">Shipping Comparison — LDP / Unit</div>
+          <div id="csp-ship-rows"></div>
+        </div>
+
+        <!-- Input Summary -->
+        <div class="cs-section">
+          <div class="cs-section-head cs-print-black">Input Summary — Duty Rates Used</div>
+          <div class="cs-grid-2">
+            <div class="cs-cell"><div class="cs-cell-label">HTS Base Duty</div><div class="cs-cell-val" id="csp-in-duty">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Section 301</div><div class="cs-cell-val" id="csp-in-301">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">IEEPA Adder</div><div class="cs-cell-val" id="csp-in-ieepa">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Effective Duty on FOB</div><div class="cs-cell-val" id="csp-in-effduty">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Mgmt / Agency Fee</div><div class="cs-cell-val" id="csp-in-mgmt">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Broker Fee</div><div class="cs-cell-val" id="csp-in-broker">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Inland Freight</div><div class="cs-cell-val" id="csp-in-inland">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Insurance Rate</div><div class="cs-cell-val" id="csp-in-insurance">—</div></div>
+          </div>
+        </div>
+
+        <!-- Packaging -->
+        <div class="cs-section" id="csp-pkg-section">
+          <div class="cs-section-head cs-print-black">Packaging & Container</div>
+          <div class="cs-subhead">Export Carton</div>
+          <div class="cs-grid-2">
+            <div class="cs-cell"><div class="cs-cell-label">Dimensions</div><div class="cs-cell-val" id="csp-ctn-dims">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Pack Out</div><div class="cs-cell-val" id="csp-ctn-units">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Arrangement</div><div class="cs-cell-val" id="csp-ctn-arr">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Gross Weight</div><div class="cs-cell-val" id="csp-ctn-wt">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">CBM / Carton</div><div class="cs-cell-val" id="csp-ctn-cbm">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Retail Box</div><div class="cs-cell-val" id="csp-retail-box">—</div></div>
+          </div>
+          <div class="cs-subhead">Pallet Config (48×40")</div>
+          <div class="cs-grid-2">
+            <div class="cs-cell"><div class="cs-cell-label">Cartons / Pallet</div><div class="cs-cell-val" id="csp-pallet-ctns">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">Units / Pallet</div><div class="cs-cell-val" id="csp-pallet-units">—</div></div>
+          </div>
+          <div class="cs-subhead">Container Capacity</div>
+          <div class="cs-grid-2">
+            <div class="cs-cell"><div class="cs-cell-label">20ft FCL</div><div class="cs-cell-val" id="csp-20ft">—</div></div>
+            <div class="cs-cell"><div class="cs-cell-label">40ft FCL</div><div class="cs-cell-val" id="csp-40ft">—</div></div>
+          </div>
+        </div>
+
+        <!-- Misc charges if any -->
+        <div class="cs-section" id="csp-misc-section" style="display:none;">
+          <div class="cs-section-head cs-print-black">Additional Charges (Reference)</div>
+          <div id="csp-misc-body"></div>
+          <div class="cs-misc-note">Amounts shown for reference. TBD fields to be confirmed at order.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Images -->
+    <div class="cs-section" id="csp-images-section" style="display:none;">
+      <div class="cs-section-head cs-print-black">Reference Images</div>
+      <div class="cs-images" id="csp-images-grid"></div>
+    </div>
+
+    <!-- Confidential footer -->
+    <div class="cs-confidential">CONFIDENTIAL — IPS Internal Use Only — Not for Client Distribution</div>
+  </div>
+</div>
+
 <script>
 const $=id=>document.getElementById(id);
 const num=v=>parseFloat(v)||0;
@@ -1099,30 +1334,187 @@ function getMiscCharges(){
 }
 
 // ── Print functions ───────────────────────────────────────────────────────────
+function populateCostSheetPrint(){
+  const orderQty=num($('order_qty').value)||1;
+  const active=getActiveModes(orderQty);
+  const best=active.length>0?active[0]:null;
+  const r=best?best.result:computeLDP(0,orderQty);
+  const ldp=r.ldp;
+  const margin=num($('target_margin').value);
+
+  // Header
+  $('csp-date').textContent=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const parts=[$('customer').value,$('sku').value,$('description').value].filter(Boolean);
+  $('csp-identity').textContent=parts.join(' · ');
+
+  // Hero
+  $('csp-ldp').textContent=ldp>0?fmtF(ldp):'—';
+  $('csp-mode').textContent=best?'Best: '+best.label:'—';
+  $('csp-margin-label').textContent=margin;
+  $('csp-sell').textContent=(margin>0&&ldp>0)?fmtF(ldp/(1-margin/100)):'—';
+  $('csp-duty-eff').textContent='Eff. duty: '+(r.fob>0?r.effDuty.toFixed(2)+'%':'—');
+  $('csp-retail').textContent=$('target_retail').value?fmtF(num($('target_retail').value)):'—';
+  $('csp-origin-dest').textContent=[$('origin_country').value,$('destination').value].filter(Boolean).join(' → ')||'—';
+
+  // Customer
+  $('csp-customer').textContent=$('customer').value||'—';
+  $('csp-sku').textContent=$('sku').value||'—';
+  $('csp-desc').textContent=$('description').value||'—';
+  $('csp-qty').textContent=orderQty.toLocaleString()+' units';
+  $('csp-origin').textContent=$('origin_country').value||'—';
+  $('csp-dest').textContent=$('destination').value||'—';
+
+  // Cost breakdown
+  $('csp-fob').textContent=fmt(r.fob);
+  $('csp-mgmt-label').textContent='Mgmt / Agency Fee ('+r.mgmtPct+'%)';
+  $('csp-mgmt').textContent=r.mgmtPct>0?fmt(-r.mgmtFeePerUnit):'—';
+  $('csp-dutiable').textContent=r.mgmtPct>0?fmt(r.dutiableFOB):'—';
+  $('csp-mgmt-row').style.display=r.mgmtPct>0?'':'none';
+  $('csp-dutiable-row').style.display=r.mgmtPct>0?'':'none';
+  $('csp-duty-note-row').style.display=r.mgmtPct>0?'':'none';
+  $('csp-tooling').textContent=fmt(r.toolingPerUnit);
+  $('csp-inspection').textContent=fmt(r.inspectionPerU);
+  $('csp-other-origin').textContent=fmt(r.otherOriginPerU);
+  $('csp-freight').textContent=fmt(r.freightPerUnit);
+  $('csp-insurance').textContent=fmt(r.insuranceAmt);
+  $('csp-cif').textContent=fmt(r.cifValue);
+  $('csp-duty-label').textContent='HTS Duty ('+($('duty_rate').value||0)+'%)';
+  $('csp-duty').textContent=fmt(r.dutyAmt);
+  $('csp-301-label').textContent='Section 301 ('+($('sec301').value||0)+'%)';
+  $('csp-301').textContent=fmt(r.sec301Amt);
+  $('csp-ieepa-label').textContent='IEEPA ('+($('ieepa').value||0)+'%)';
+  $('csp-ieepa').textContent=fmt(r.ieepaAmt);
+  $('csp-mpf').textContent=fmt(r.mpfAmt);
+  $('csp-hmf').textContent=fmt(r.hmfAmt);
+  $('csp-broker').textContent=fmt(r.brokerPerU);
+  $('csp-duties-total').textContent=fmt(r.totalDuties);
+  $('csp-inland').textContent=fmt(r.inlandPerU);
+  $('csp-warehouse').textContent=fmt(r.warehousePerU);
+  $('csp-other-dest').textContent=fmt(r.otherDestPerU);
+  $('csp-ldp-total').textContent=ldp>0?fmtF(ldp):'—';
+
+  // Tooling excluded
+  const tm=document.querySelector('input[name=tooling_mode]:checked').value;
+  const toolingTotal=num($('tooling').value);
+  const tSec=$('csp-tooling-section');
+  if(tm==='exclude'&&toolingTotal>0){
+    tSec.style.display='';
+    $('csp-tooling-total').textContent=fmtF(toolingTotal);
+    $('csp-tooling-true').textContent=ldp>0?fmtF(ldp+(toolingTotal/orderQty)):'—';
+  } else { tSec.style.display='none'; }
+
+  // Input summary
+  $('csp-in-duty').textContent=($('duty_rate').value||'0')+'%';
+  $('csp-in-301').textContent=($('sec301').value||'0')+'%';
+  $('csp-in-ieepa').textContent=($('ieepa').value||'0')+'%';
+  $('csp-in-effduty').textContent=r.fob>0?r.effDuty.toFixed(2)+'%':'—';
+  $('csp-in-mgmt').textContent=($('mgmt_fee_pct').value||'0')+'%';
+  $('csp-in-broker').textContent=fmtF(num($('broker').value));
+  $('csp-in-inland').textContent=$('inland').value?fmtF(num($('inland').value)):'—';
+  $('csp-in-insurance').textContent=($('insurance').value||'0.5')+'%';
+
+  // Shipping comparison
+  const shipRows=$('csp-ship-rows');
+  shipRows.innerHTML='';
+  if(active.length>0){
+    active.forEach((m,i)=>{
+      const row=document.createElement('div');
+      row.className='cs-ship-row'+(i===0?' best':'');
+      const partialTag=m.partial?'<span class="cs-partial-badge">Partial '+Math.round((m.units/m.cap)*100)+'%</span>':'';
+      row.innerHTML='<span style="font-weight:'+(i===0?'700':'400')+';">'+m.label+partialTag+'</span>'+
+        '<span style="font-size:11px;color:#888;">'+m.units.toLocaleString()+' units · '+(m.partial?Math.round((m.units/m.cap)*100)+'% full':'Full load')+'</span>'+
+        '<span style="font-family:Roboto Mono,monospace;font-weight:'+(i===0?'700':'400')+';">'+fmtF(m.ldp)+'</span>'+
+        '<span>'+(i===0?'<span class="cs-ship-best-badge">Best</span>':'')+'</span>';
+      shipRows.appendChild(row);
+    });
+  } else {
+    shipRows.innerHTML='<div style="padding:10px 12px;font-size:11px;color:#bbb;font-style:italic;">No freight costs entered</div>';
+  }
+
+  // Packaging
+  const pkg=estimatePackaging();
+  const pkgSec=$('csp-pkg-section');
+  if(pkg){
+    pkgSec.style.display='';
+    $('csp-ctn-dims').textContent=pkg.carton.l+'" × '+pkg.carton.w+'" × '+pkg.carton.h+'"';
+    $('csp-ctn-units').textContent=pkg.carton.units+' units';
+    $('csp-ctn-arr').textContent=($('arr_l').value||1)+' × '+($('arr_w').value||1)+' × '+($('arr_h').value||1);
+    $('csp-ctn-wt').textContent=pkg.carton.wt+' lbs gross';
+    $('csp-ctn-cbm').textContent=pkg.carton.cbm+' m³';
+    $('csp-retail-box').textContent=pkg.retail.l+'" × '+pkg.retail.w+'" × '+pkg.retail.h+'"';
+    $('csp-pallet-ctns').textContent=pkg.pallet.ctns+' ctns ('+pkg.pallet.ctnsL+'×'+pkg.pallet.ctnsW+'×'+pkg.pallet.layers+'L)';
+    $('csp-pallet-units').textContent=pkg.pallet.units.toLocaleString()+' units';
+    $('csp-20ft').textContent=pkg.container.ctns20+' ctns · '+pkg.container.units20.toLocaleString()+' units';
+    $('csp-40ft').textContent=pkg.container.ctns40+' ctns · '+pkg.container.units40.toLocaleString()+' units';
+  } else { pkgSec.style.display='none'; }
+
+  // Misc charges
+  const charges=getMiscCharges();
+  const miscSec=$('csp-misc-section');
+  const miscBody=$('csp-misc-body');
+  if(charges.length>0){
+    miscSec.style.display='';
+    miscBody.innerHTML='';
+    charges.forEach((c,i)=>{
+      const div=document.createElement('div');
+      div.className='cs-misc-row';
+      const amtStr=c.amt>0?(c.type==='unit'?fmtF(c.amt)+'/unit':'Flat — '+fmtF(c.amt)):'TBD';
+      div.innerHTML='<span>'+c.desc+'</span><span style="font-family:Roboto Mono,monospace;">'+amtStr+'</span>';
+      miscBody.appendChild(div);
+    });
+  } else { miscSec.style.display='none'; }
+
+  // Images
+  const imgSec=$('csp-images-section');
+  const imgGrid=$('csp-images-grid');
+  const hasImg=imgData.some(d=>d!==null);
+  if(hasImg&&imgGrid){
+    imgSec.style.display='';
+    imgGrid.innerHTML='';
+    imgData.forEach((d,i)=>{
+      if(!d)return;
+      const label=i===2?($('img-label-2')?.value||'Image 3'):imgLabels[i];
+      const div=document.createElement('div');div.className='cs-img-item';
+      div.innerHTML='<div class="cs-img-label">'+label+'</div><img src="'+d+'" />';
+      imgGrid.appendChild(div);
+    });
+  } else { imgSec.style.display='none'; }
+}
+
 function printCostSheet(){
-  // Build images section for print
-  renderImagesGrid('cs-images-grid', false);
-  const hasImages=imgData.some(d=>d!==null);
-  $('cs-images-section').style.display=hasImages?'block':'none';
-  document.body.classList.add('printing-costsheet');
-  document.body.classList.remove('printing-quote');
+  populateCostSheetPrint();
+  $('cs-print-view').style.display='block';
   setTimeout(()=>{
     window.print();
-    setTimeout(()=>{
-      document.body.classList.remove('printing-costsheet');
-      $('cs-images-section').style.display='none';
-    },1000);
-  },150);
+    setTimeout(()=>{ $('cs-print-view').style.display='none'; },500);
+  },200);
 }
 
 function printQuote(){
-  switchTab('quote');
+  // Show quote preview as full page print
+  const qpw=$('quote-preview-wrapper');
+  const orig=qpw?qpw.style.cssText:'';
+  // Temporarily make quote preview full page
+  document.querySelectorAll('body > *:not(#quote-preview-wrapper)').forEach(el=>{
+    el._prevDisplay=el.style.display;el.style.display='none';
+  });
+  if(qpw){
+    qpw.style.display='block';
+    qpw.style.position='static';
+    // Hide the preview label bar
+    const lbl=qpw.querySelector('.qp-preview-label');
+    if(lbl)lbl.style.display='none';
+  }
   setTimeout(()=>{
-    document.body.classList.add('printing-quote');
-    document.body.classList.remove('printing-costsheet');
     window.print();
-    setTimeout(()=>document.body.classList.remove('printing-quote'),1000);
-  }, 150);
+    setTimeout(()=>{
+      document.querySelectorAll('body > *').forEach(el=>{
+        if(el._prevDisplay!==undefined){el.style.display=el._prevDisplay;delete el._prevDisplay;}
+      });
+      const lbl=qpw?.querySelector('.qp-preview-label');
+      if(lbl)lbl.style.display='';
+    },500);
+  },150);
 }
 
 function saveQuote(){
@@ -1435,5 +1827,177 @@ addPriceBreak();
 calculate();
 updateQuotePreview();
 </script>
+
+<!-- ══ COST SHEET PRINT VIEW (hidden, populated on print) ══════════════════ -->
+<div id="cs-print-view">
+  <div class="cs-doc">
+    <!-- Header -->
+    <div class="cs-header">
+      <div class="cs-header-left">
+        <div class="cs-company">International Product Solutions</div>
+        <div class="cs-sub">Cost Sheet — Internal Use Only</div>
+        <div id="cs-thumb-print" style="display:flex;gap:4px;margin-top:8px;"></div>
+      </div>
+      <div class="cs-header-right">
+        <div class="cs-doc-title">Cost Sheet</div>
+        <div class="cs-doc-id" id="cs-id">—</div>
+        <div class="cs-doc-date" id="cs-date-print">—</div>
+      </div>
+    </div>
+
+    <!-- LDP Hero -->
+    <div class="cs-ldp-hero">
+      <div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#555;margin-bottom:6px;">Landed Duty Paid — Per Unit</div>
+        <div class="cs-ldp-value" id="cs-ldp-hero-val">—</div>
+        <div style="font-size:10px;color:#555;margin-top:6px;" id="cs-best-mode">—</div>
+      </div>
+      <div class="cs-ldp-meta">
+        <div class="cs-ldp-meta-row"><span class="cs-ldp-meta-label">Min Sell @ <span id="cs-margin-pct">—</span>% GM</span><span class="cs-ldp-meta-val" id="cs-min-sell">—</span></div>
+        <div class="cs-ldp-meta-row"><span class="cs-ldp-meta-label">Effective Duty on Dutiable FOB</span><span class="cs-ldp-meta-val" id="cs-eff-duty">—</span></div>
+        <div style="font-size:9px;color:#444;font-style:italic;margin-top:6px;border-top:1px solid #222;padding-top:4px;" id="cs-mgmt-note-print"></div>
+      </div>
+    </div>
+
+    <!-- Two column layout: left = product + costs, right = breakdown -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid #e0e0e0;">
+
+      <!-- LEFT COLUMN -->
+      <div style="border-right:1px solid #e0e0e0;">
+
+        <!-- Customer & Product -->
+        <div class="cs-section">
+          <div class="cs-section-title">Customer & Product</div>
+          <div class="cs-grid">
+            <div class="cs-field"><div class="cs-field-label">Customer</div><div class="cs-field-value" id="csp-customer">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">SKU / Item No.</div><div class="cs-field-value" id="csp-sku">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Description</div><div class="cs-field-value" id="csp-desc">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Country of Origin</div><div class="cs-field-value" id="csp-origin">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Final Destination</div><div class="cs-field-value" id="csp-dest">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Order Quantity</div><div class="cs-field-value" id="csp-qty">—</div></div>
+          </div>
+        </div>
+
+        <!-- Origin Costs -->
+        <div class="cs-section">
+          <div class="cs-section-title">Origin Costs</div>
+          <div class="cs-grid">
+            <div class="cs-field"><div class="cs-field-label">FOB Cost / Unit</div><div class="cs-field-value" id="csp-fob">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Mgmt / Agency Fee</div><div class="cs-field-value" id="csp-mgmt">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Dutiable FOB (net)</div><div class="cs-field-value" id="csp-dut-fob">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Tooling</div><div class="cs-field-value" id="csp-tooling">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Inspection Fee</div><div class="cs-field-value" id="csp-inspection">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Other Origin</div><div class="cs-field-value" id="csp-other-origin">—</div></div>
+          </div>
+        </div>
+
+        <!-- Duties -->
+        <div class="cs-section">
+          <div class="cs-section-title">Duties & Customs</div>
+          <div class="cs-grid">
+            <div class="cs-field"><div class="cs-field-label">HTS Base Duty</div><div class="cs-field-value" id="csp-hts">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Section 301</div><div class="cs-field-value" id="csp-301">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">IEEPA</div><div class="cs-field-value" id="csp-ieepa">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">MPF</div><div class="cs-field-value" id="csp-mpf">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">HMF</div><div class="cs-field-value" id="csp-hmf">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Broker Fee</div><div class="cs-field-value" id="csp-broker">—</div></div>
+          </div>
+        </div>
+
+        <!-- Destination -->
+        <div class="cs-section">
+          <div class="cs-section-title">US Destination Costs</div>
+          <div class="cs-grid">
+            <div class="cs-field"><div class="cs-field-label">Inland / Drayage</div><div class="cs-field-value" id="csp-inland">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Warehousing / 3PL</div><div class="cs-field-value" id="csp-warehouse">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Other Destination</div><div class="cs-field-value" id="csp-other-dest">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Insurance Rate</div><div class="cs-field-value" id="csp-insurance">—</div></div>
+          </div>
+        </div>
+
+        <!-- Packaging -->
+        <div class="cs-section">
+          <div class="cs-section-title">Packaging & Carton</div>
+          <div class="cs-grid">
+            <div class="cs-field"><div class="cs-field-label">Retail Box</div><div class="cs-field-value" id="csp-retail-box">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Carton Dims</div><div class="cs-field-value" id="csp-ctn-dims">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Pack Out</div><div class="cs-field-value" id="csp-packout">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Arrangement</div><div class="cs-field-value" id="csp-arrangement">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Carton CBM</div><div class="cs-field-value" id="csp-cbm">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Gross Weight</div><div class="cs-field-value" id="csp-gross-wt">—</div></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div>
+
+        <!-- Shipping Comparison -->
+        <div class="cs-section">
+          <div class="cs-section-title">Shipping Comparison — LDP / Unit</div>
+          <table class="cs-table">
+            <thead><tr><th>Mode</th><th>Units</th><th>Utilization</th><th class="right">LDP / Unit</th><th></th></tr></thead>
+            <tbody id="csp-ship-rows"></tbody>
+          </table>
+        </div>
+
+        <!-- Cost Breakdown -->
+        <div class="cs-section">
+          <div class="cs-section-title">Cost Breakdown / Unit — Best Mode</div>
+          <table class="cs-table" id="csp-breakdown-table">
+            <thead><tr><th>Item</th><th class="right">Per Unit</th></tr></thead>
+            <tbody id="csp-breakdown-rows"></tbody>
+          </table>
+        </div>
+
+        <!-- Container Capacity -->
+        <div class="cs-section">
+          <div class="cs-section-title">Container Capacity</div>
+          <div class="cs-grid">
+            <div class="cs-field"><div class="cs-field-label">20ft FCL</div><div class="cs-field-value" id="csp-20ft">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">40ft FCL</div><div class="cs-field-value" id="csp-40ft">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Pallets / Container</div><div class="cs-field-value" id="csp-pallets">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Units / Pallet</div><div class="cs-field-value" id="csp-units-pallet">—</div></div>
+          </div>
+        </div>
+
+        <!-- Known Packout Overrides -->
+        <div class="cs-section" id="csp-known-section">
+          <div class="cs-section-title">Known Container Packouts</div>
+          <div class="cs-grid">
+            <div class="cs-field"><div class="cs-field-label">Known 20ft</div><div class="cs-field-value" id="csp-k20">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Known 40ft</div><div class="cs-field-value" id="csp-k40">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Known 40ft HC</div><div class="cs-field-value" id="csp-k40hc">—</div></div>
+          </div>
+        </div>
+
+        <!-- Pricing Summary -->
+        <div class="cs-section" style="background:#f8f8f8;">
+          <div class="cs-section-title">Pricing Summary</div>
+          <div class="cs-grid">
+            <div class="cs-field"><div class="cs-field-label">LDP / Unit</div><div class="cs-field-value" style="font-size:16px;font-weight:700;" id="csp-ldp-final">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Target Margin</div><div class="cs-field-value" id="csp-margin">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Min Sell Price</div><div class="cs-field-value" style="font-size:14px;font-weight:700;" id="csp-min-sell">—</div></div>
+            <div class="cs-field"><div class="cs-field-label">Target Retail</div><div class="cs-field-value" id="csp-target-retail">—</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Images row -->
+    <div id="csp-images-row" style="display:none;">
+      <div class="cs-section">
+        <div class="cs-section-title">Reference Images</div>
+        <div class="cs-images-row" id="csp-images-grid"></div>
+      </div>
+    </div>
+
+    <!-- Confidential footer -->
+    <div class="cs-confidential">CONFIDENTIAL — IPS Internal Use Only — Not for Client Distribution &nbsp;|&nbsp; Generated: <span id="cs-generated-date">—</span></div>
+  </div>
+</div>
+
 </body>
 </html>
