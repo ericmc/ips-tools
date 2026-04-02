@@ -809,7 +809,7 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
 
     /* ── Sections ── */
     .cs-section { border: 1px solid #d0d0d0; margin-bottom: 10px; break-inside: avoid; page-break-inside: avoid; }
-    .cs-section-head { background: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #fff; padding: 5px 10px; font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; break-after: avoid; }
+    .cs-section-head { background: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #fff; padding: 5px 10px; font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; break-after: avoid; white-space: nowrap; overflow: hidden; }
     .cs-subhead { padding: 4px 10px 2px; font-size: 8px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #aaa; background: #fafafa; border-bottom: 1px solid #e8e8e8; break-after: avoid; }
 
     /* ── Grid cells ── */
@@ -822,7 +822,7 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
     .cs-cell-val { font-family: 'Roboto Mono', monospace; font-size: 11px; color: #111; }
 
     /* ── Data rows ── */
-    .cs-row { display: flex; justify-content: space-between; padding: 3px 10px; border-bottom: 1px solid #f0f0f0; font-size: 11px; break-inside: avoid; }
+    .cs-row { display: flex; justify-content: space-between; padding: 2px 10px; border-bottom: 1px solid #f0f0f0; font-size: 10.5px; break-inside: avoid; }
     .cs-row:last-child { border-bottom: none; }
     .cs-row.shade { background: #f6f6f6; }
     .cs-row.total { border-top: 2px solid #000; font-weight: 700; background: #f6f6f6; break-before: avoid; }
@@ -1439,7 +1439,9 @@ function populateCostSheetPrint(){
   // Cost breakdown
   $('csp-fob').textContent=fmt(r.fob);
   $('csp-mgmt-label').textContent='Mgmt / Agency Fee ('+r.mgmtPct+'%)';
-  $('csp-mgmt').textContent=r.mgmtPct>0?fmt(-r.mgmtFeePerUnit):'—';
+  // Show — if fee is zero or negligible (less than $0.005)
+  const mgmtAmt=r.mgmtFeePerUnit;
+  $('csp-mgmt').textContent=(r.mgmtPct>0&&mgmtAmt>=0.005)?('-$'+mgmtAmt.toFixed(2)):'—';
   $('csp-dutiable').textContent=r.mgmtPct>0?fmt(r.dutiableFOB):'—';
   $('csp-mgmt-row').style.display=r.mgmtPct>0?'':'none';
   $('csp-dutiable-row').style.display=r.mgmtPct>0?'':'none';
@@ -1572,7 +1574,7 @@ function printCostSheet(){
     @page{size:letter portrait;margin:0.5in 0.55in;}
     .cs-section{break-inside:avoid;page-break-inside:avoid;}
     .cs-header{break-after:avoid;page-break-after:avoid;background:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:flex-start;}
-    .cs-hero{break-before:avoid;break-after:avoid;page-break-before:avoid;page-break-after:avoid;background:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#fff;padding:10px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-bottom:10px;}
+    .cs-hero{break-before:avoid;break-after:avoid;page-break-before:avoid;page-break-after:avoid;background:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#fff;padding:8px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-bottom:8px;}
     .cs-header-title{font-family:'Archivo Narrow',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#fff;}
     .cs-header-sub{font-size:9px;color:#888;letter-spacing:0.1em;text-transform:uppercase;margin-top:3px;}
     .cs-doc-label{font-size:9px;color:#666;letter-spacing:0.14em;text-transform:uppercase;text-align:right;}
@@ -1582,21 +1584,21 @@ function printCostSheet(){
     .cs-hero-item:first-child{padding-left:0;}
     .cs-hero-item:last-child{border-right:none;}
     .cs-hero-label{font-size:8px;color:#666;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px;}
-    .cs-hero-val{font-family:'Archivo Narrow',sans-serif;font-size:22px;font-weight:700;color:#fff;line-height:1;}
+    .cs-hero-val{font-family:'Archivo Narrow',sans-serif;font-size:20px;font-weight:700;color:#fff;line-height:1;}
     .cs-hero-sub{font-family:'Roboto Mono',monospace;font-size:9px;color:#888;margin-top:2px;}
     .cs-body{padding:0;}
-    .cs-two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+    .cs-two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
     .cs-header-block{break-inside:avoid;page-break-inside:avoid;display:block;}
-    .cs-section{border:1px solid #d0d0d0;margin-bottom:10px;}
-    .cs-section-head{background:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#fff;padding:5px 10px;font-size:8px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;break-after:avoid;}
+    .cs-section{border:1px solid #d0d0d0;margin-bottom:8px;break-inside:avoid;page-break-inside:avoid;}
+    .cs-section-head{background:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#fff;padding:5px 10px;font-size:8px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;break-after:avoid;white-space:nowrap;overflow:hidden;}
     .cs-subhead{padding:4px 10px 2px;font-size:8px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#aaa;background:#fafafa;border-bottom:1px solid #e8e8e8;break-after:avoid;}
     .cs-grid-2{display:grid;grid-template-columns:repeat(2,1fr);}
     .cs-grid-3{display:grid;grid-template-columns:repeat(3,1fr);}
-    .cs-cell{padding:4px 10px;border-right:1px solid #ebebeb;border-bottom:1px solid #ebebeb;}
+    .cs-cell{padding:3px 10px;border-right:1px solid #ebebeb;border-bottom:1px solid #ebebeb;}
     .cs-cell:last-child{border-right:none;}
     .cs-cell-label{font-size:8px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#aaa;margin-bottom:1px;}
     .cs-cell-val{font-family:'Roboto Mono',monospace;font-size:11px;color:#111;}
-    .cs-row{display:flex;justify-content:space-between;padding:3px 10px;border-bottom:1px solid #f0f0f0;font-size:11px;break-inside:avoid;}
+    .cs-row{display:flex;justify-content:space-between;padding:2px 10px;border-bottom:1px solid #f0f0f0;font-size:10.5px;break-inside:avoid;}
     .cs-row:last-child{border-bottom:none;}
     .cs-row.shade{background:#f6f6f6!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     .cs-row.total{border-top:2px solid #000;font-weight:700;background:#f6f6f6!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-before:avoid;}
