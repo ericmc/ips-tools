@@ -1558,13 +1558,14 @@ function populateCostSheetPrint(){
 
 function printCostSheet(){
   populateCostSheetPrint();
+  // Get the cs-print-view content
   const csDiv=$('cs-print-view');
   const clone=csDiv.cloneNode(true);
-  const innerStyle=clone.querySelector('style');
-  if(innerStyle)innerStyle.remove();
+  const innerStyleEl=clone.querySelector('style');
+  const innerStyles=innerStyleEl?innerStyleEl.innerHTML:'';
+  if(innerStyleEl)innerStyleEl.remove();
   const printHTML=clone.innerHTML;
-  const win=window.open('','_blank','width=850,height=1100');
-  if(!win){alert('Please allow popups for this site to use Print Cost Sheet.');return;}
+
   const styles=`
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     html,body{font-family:'Archivo',sans-serif;background:#fff;color:#111;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
@@ -1615,39 +1616,28 @@ function printCostSheet(){
     .cs-misc-row{display:flex;justify-content:space-between;padding:4px 10px;border-bottom:1px solid #f0f0f0;font-size:11px;break-inside:avoid;}
     .cs-misc-note{font-size:9px;color:#888;font-style:italic;padding:4px 10px;background:#fafafa;}
     .cs-confidential{text-align:center;padding:8px;border-top:2px solid #000;margin-top:10px;font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#666;break-before:avoid;}
-  `;
-  // Wrap content in padding div — @page margin:0 so browser chrome doesn't eat into layout
-  const wrappedHTML = '<div style="padding:0.45in 0.5in 0.5in 0.5in;">' + printHTML + '</div>';
-  const pageOverride = `
-    @page { size: letter portrait; margin: 0; }
-    html, body { margin: 0; padding: 0; width: 8.5in; }
-    /* Extra page break safety */
-    .cs-header-block { break-inside: avoid !important; page-break-inside: avoid !important; }
-    .cs-section { break-inside: avoid !important; page-break-inside: avoid !important; }
-    .cs-two-col { break-inside: avoid !important; page-break-inside: avoid !important; }
-    .cs-subhead + div { break-before: avoid !important; page-break-before: avoid !important; }
-    h1, h2, h3, .cs-section-head, .cs-subhead { orphans: 3; widows: 3; }
-  `;
-  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>IPS Cost Sheet</title>'
-    +'<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet"/>'
-    +'<style>'+styles+pageOverride+'</style>'
-    +'</head><body>'+wrappedHTML+'</body></html>');
-  win.document.close();
-  win.focus();
-  // Show print tip in the popup before printing
+  `
+
+  // Create hidden iframe — no popup needed, works in all browsers
+  let iframe=document.getElementById('cs-print-iframe');
+  if(iframe)iframe.remove();
+  iframe=document.createElement('iframe');
+  iframe.id='cs-print-iframe';
+  iframe.style.cssText='position:fixed;top:-10000px;left:-10000px;width:8.5in;height:11in;border:none;visibility:hidden;';
+  document.body.appendChild(iframe);
+
+  const doc=iframe.contentDocument||iframe.contentWindow.document;
+  doc.open();
+  doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"/>'+
+    '<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet"/>'+
+    '<style>'+styles+innerStyles+'</style>'+
+    '</head><body><div style="padding:0.45in 0.5in;">'+printHTML+'</div></body></html>');
+  doc.close();
+
   setTimeout(()=>{
-    try {
-      const tip = win.document.createElement('div');
-      tip.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#000;color:#fff;font-family:Arial,sans-serif;font-size:12px;padding:8px 16px;z-index:9999;display:flex;justify-content:space-between;align-items:center;';
-      tip.innerHTML = '<span>📋 <strong>Tip:</strong> In the print dialog, set <strong>Margins → None</strong> and uncheck <strong>Headers and footers</strong> for a clean PDF.</span>'
-        + '<button onclick="this.parentNode.remove()" style="background:transparent;border:1px solid #666;color:#fff;padding:2px 10px;cursor:pointer;font-size:11px;">Got it</button>';
-      win.document.body.insertBefore(tip, win.document.body.firstChild);
-      // Move tip out of print
-      const tipStyle = win.document.createElement('style');
-      tipStyle.textContent = '@media print { div[style*="position:fixed"] { display:none!important; } }';
-      win.document.head.appendChild(tipStyle);
-    } catch(e){}
-    setTimeout(()=>{ win.print(); setTimeout(()=>win.close(),500); }, 600);
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+    setTimeout(()=>{ iframe.remove(); }, 2000);
   }, 1000);
 }
 
@@ -1655,77 +1645,67 @@ function printQuote(){
   updateQuotePreview();
   const qp=$('quote-preview');
   if(!qp)return;
-  // Deep clone to avoid live DOM contamination from cs-print-view
-  const clone=qp.cloneNode(true);
-  const printHTML=clone.innerHTML;
-  const win=window.open('','_blank','width=900,height=1200');
-  if(!win){alert('Please allow popups for this site to use Print / Export PDF.\n\nIn Edge: click the popup blocked icon in the address bar and select \"Always allow popups from this site\".');return;}
-  win.document.write(`<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8"/>
-<title>IPS Quote — ${$('customer').value||'Client'} — ${$('q-num').value||'IPS-2026-0001'}</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Archivo', sans-serif; background: #fff; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; width: 8.5in; }
-  @page { size: letter portrait; margin: 0; }
-  @media print { body { margin: 0; padding: 0; width: 100%; } }
-  .qp-header { background: #000 !important; color: #fff; padding: 24px 28px 20px; display: flex; justify-content: space-between; align-items: flex-start; }
-  .qp-company { font-family: 'Archivo Narrow', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; }
-  .qp-tagline { font-size: 10px; color: #666; margin-top: 3px; letter-spacing: 0.04em; }
-  .qp-quote-meta { text-align: right; }
-  .qp-quote-num { font-family: 'Roboto Mono', monospace; font-size: 14px; color: #fff; font-weight: 500; }
-  .qp-quote-date { font-size: 10px; color: #666; margin-top: 3px; }
-  .qp-expiry { font-size: 10px; color: #555; margin-top: 3px; }
-  .qp-section { padding: 14px 28px; border-bottom: 1px solid #e8e8e8; }
-  .qp-section-title { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #aaa; margin-bottom: 10px; }
-  .qp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; }
-  .qp-field { display: flex; flex-direction: column; gap: 2px; }
-  .qp-field-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #aaa; }
-  .qp-field-value { font-family: 'Roboto Mono', monospace; font-size: 12px; color: #111; }
-  .qp-price-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
-  .qp-price-table th { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; background: #000 !important; padding: 7px 12px; text-align: right; }
-  .qp-price-table th:first-child { text-align: left; }
-  .qp-price-table td { padding: 7px 12px; font-family: 'Roboto Mono', monospace; font-size: 12px; color: #111; border-bottom: 1px solid #f0f0f0; text-align: right; }
-  .qp-price-table td:first-child { text-align: left; font-family: 'Archivo', sans-serif; font-size: 12px; }
-  .qp-price-table tr.best-row td { font-weight: 700; background: #f8f8f8; border-top: 1px solid #ddd; }
-  .qp-duty-note { font-size: 10px; color: #888; margin-top: 8px; font-style: italic; padding: 8px 10px; background: #fafafa; border-left: 2px solid #d0d0d0; }
-  .qp-tc { padding: 14px 28px; }
-  .qp-tc-title { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #aaa; margin-bottom: 8px; }
-  .qp-tc-text { font-size: 10px; color: #888; line-height: 1.6; }
-  .qp-footer { background: #f8f8f8; padding: 12px 28px; display: flex; justify-content: space-between; border-top: 1px solid #e0e0e0; flex-wrap: wrap; gap: 6px; }
-  .qp-footer-item { font-size: 10px; color: #aaa; }
-  .qp-footer-item span { color: #555; font-weight: 600; }
-  .qp-misc-note { font-size: 10px; color: #888; font-style: italic; margin-top: 8px; padding: 6px 10px; background: #fafafa; border-left: 2px solid #d0d0d0; }
-  .break-before { break-before: page; }
-  section, .qp-section { break-inside: avoid; }
-</style>
-</head>
-<body>
-<div id="tip-bar" style="position:fixed;top:0;left:0;right:0;background:#000;color:#fff;font-family:Arial,sans-serif;font-size:12px;padding:8px 16px;z-index:9999;display:flex;justify-content:space-between;align-items:center;">
-  <span>⬇ <strong>To save as PDF:</strong> Set Margins to <strong>None</strong> and uncheck <strong>Headers and footers</strong> in the print dialog.</span>
-  <button onclick="document.getElementById('tip-bar').style.display='none'" style="background:transparent;border:1px solid #666;color:#fff;padding:2px 10px;cursor:pointer;font-size:11px;margin-left:12px;">Got it</button>
-</div>
-<div style="padding:0.5in 0.55in;margin-top:36px;" id="quote-content">
-${printHTML}
-</div>
-<style>
-  @media print {
-    #tip-bar { display: none !important; }
-    #quote-content { margin-top: 0 !important; }
-    .qp-preview-label, .qp-print-btn-wrapper { display: none !important; }
-  }
-</style>
-<script>
-  window.onload = function() {
-    setTimeout(function(){ window.print(); }, 800);
-  };
-<\/script>
-</body>
-</html>`);
-  win.document.close();
-  win.focus();
+
+  // Build self-contained quote HTML
+  const quoteHTML=qp.innerHTML;
+  const styles=`
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Archivo',sans-serif;background:#fff;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    @page{size:letter portrait;margin:0;}
+    .wrap{padding:0.5in 0.55in;}
+    @media print{.no-print{display:none!important;}.wrap{padding:0.5in 0.55in;}}
+    .qp-header{background:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#fff;padding:20px 28px;display:flex;justify-content:space-between;align-items:flex-start;}
+    .qp-company{font-family:'Archivo Narrow',sans-serif;font-size:20px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#fff;}
+    .qp-tagline{font-size:10px;color:#666;margin-top:3px;}
+    .qp-quote-meta{text-align:right;}
+    .qp-quote-num{font-family:'Roboto Mono',monospace;font-size:14px;color:#fff;font-weight:500;}
+    .qp-quote-date,.qp-expiry{font-size:10px;color:#666;margin-top:3px;}
+    .qp-section{padding:12px 28px;border-bottom:1px solid #e8e8e8;break-inside:avoid;page-break-inside:avoid;}
+    .qp-section-title{font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#aaa;margin-bottom:8px;}
+    .qp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;}
+    .qp-field{display:flex;flex-direction:column;gap:2px;}
+    .qp-field-label{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#aaa;}
+    .qp-field-value{font-family:'Roboto Mono',monospace;font-size:12px;color:#111;}
+    .qp-price-table{width:100%;border-collapse:collapse;margin-top:6px;}
+    .qp-price-table th{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#fff;background:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:7px 12px;text-align:right;}
+    .qp-price-table th:first-child{text-align:left;}
+    .qp-price-table td{padding:7px 12px;font-family:'Roboto Mono',monospace;font-size:12px;color:#111;border-bottom:1px solid #f0f0f0;text-align:right;}
+    .qp-price-table td:first-child{text-align:left;font-family:'Archivo',sans-serif;}
+    .qp-price-table tr.best-row td{font-weight:700;background:#f8f8f8;border-top:1px solid #ddd;}
+    .qp-duty-note{font-size:10px;color:#888;margin-top:8px;font-style:italic;padding:8px 10px;background:#fafafa;border-left:2px solid #d0d0d0;}
+    .qp-tc{padding:12px 28px;break-inside:avoid;}
+    .qp-tc-title{font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#aaa;margin-bottom:8px;}
+    .qp-tc-text{font-size:10px;color:#888;line-height:1.6;}
+    .qp-footer{background:#f8f8f8!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:10px 28px;display:flex;justify-content:space-between;border-top:1px solid #e0e0e0;flex-wrap:wrap;gap:4px;}
+    .qp-footer-item{font-size:10px;color:#aaa;}
+    .qp-footer-item span{color:#555;font-weight:600;}
+    .qp-misc-note{font-size:10px;color:#888;font-style:italic;margin-top:6px;padding:6px 10px;background:#fafafa;border-left:2px solid #d0d0d0;}
+    #qp-thumb-area{display:none;}
+    .qp-preview-label,.qp-print-btn-wrapper{display:none!important;}
+  `;
+
+  // Create hidden iframe for printing
+  let iframe=document.getElementById('print-iframe');
+  if(iframe) iframe.remove();
+  iframe=document.createElement('iframe');
+  iframe.id='print-iframe';
+  iframe.style.cssText='position:fixed;top:-10000px;left:-10000px;width:8.5in;height:11in;border:none;visibility:hidden;';
+  document.body.appendChild(iframe);
+
+  const doc=iframe.contentDocument||iframe.contentWindow.document;
+  doc.open();
+  doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"/>'+
+    '<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet"/>'+
+    '<style>'+styles+'</style>'+
+    '</head><body><div class="wrap">'+quoteHTML+'</div></body></html>');
+  doc.close();
+
+  // Wait for fonts then print
+  setTimeout(()=>{
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+    setTimeout(()=>{ iframe.remove(); }, 2000);
+  }, 1000);
 }
 
 function saveQuote(){
