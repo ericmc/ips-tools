@@ -605,7 +605,16 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
         </div>
         <div class="field"><label>Quote Date</label><div class="input-wrap"><input type="date" id="q-date" /></div></div>
         <div class="field"><label>Margin % <span style="color:#e0a800;font-size:9px;letter-spacing:0.06em;">(INTERNAL — not shown on quote)</span></label><div class="input-wrap"><input type="number" id="q-margin" step="any" placeholder="e.g. 35" oninput="updateQuotePreview()" /><span class="suf">%</span></div><span class="hint">Applied on top of LDP to compute DDP price. Never shown to client.</span></div>
-        <div class="field"><label>Delivery Terms</label><div class="input-wrap"><input type="text" id="q-terms" value="DDP" /></div></div>
+        <div class="field">
+          <label>Delivery Terms</label>
+          <div class="select-wrap"><select id="q-terms" onchange="updateDeliveryDesc();updateQuotePreview();">
+            <option value="DDP">DDP — Delivered Duty Paid</option>
+            <option value="DAP">DAP — Delivered at Place</option>
+            <option value="CIF">CIF — Cost, Insurance & Freight</option>
+            <option value="FOB Factory">FOB Factory — Free on Board</option>
+          </select><span class="select-arrow">▼</span></div>
+          <div id="q-terms-desc" style="font-size:10px;color:#888;font-style:italic;margin-top:4px;padding:5px 8px;background:#f8f8f8;border-left:2px solid #d0d0d0;line-height:1.5;"></div>
+        </div>
         <div class="field span2"><label>Payment Terms</label>
           <div class="select-wrap"><select id="q-payment" onchange="toggleCustomPayment()">
             <option value="Net 30 on delivery">Net 30 on delivery</option>
@@ -721,10 +730,17 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
       <div class="qp-section-title">Prepared For</div>
       <div class="qp-grid">
         <div class="qp-field"><div class="qp-field-label">Customer</div><div class="qp-field-value" id="qp-customer">—</div></div>
-        <div class="qp-field"><div class="qp-field-label">Delivery Terms</div><div class="qp-field-value" id="qp-terms">DDP</div></div>
         <div class="qp-field"><div class="qp-field-label">Destination</div><div class="qp-field-value" id="qp-dest">—</div></div>
         <div class="qp-field"><div class="qp-field-label">Payment Terms</div><div class="qp-field-value" id="qp-payment">—</div></div>
+        <div class="qp-field"><div class="qp-field-label">Quote Valid Until</div><div class="qp-field-value" id="qp-valid-until">—</div></div>
       </div>
+    </div>
+    <div class="qp-section">
+      <div class="qp-section-title">Delivery Terms</div>
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px;">
+        <div class="qp-field-value" id="qp-terms" style="font-size:14px;font-weight:700;font-family:'Archivo Narrow',sans-serif;letter-spacing:0.04em;">DDP</div>
+      </div>
+      <div id="qp-terms-desc" style="font-size:11px;color:#666;line-height:1.6;font-style:italic;"></div>
     </div>
 
     <div class="qp-section">
@@ -778,9 +794,29 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
     <div class="qp-tc">
       <div class="qp-tc-title">Terms & Conditions</div>
       <div class="qp-tc-text">
-        This quotation is valid for <span id="qp-validity-text">30</span> days from the date of issue. Prices are subject to change after expiry and may need to be reconfirmed. All prices are quoted in USD. Pricing is based on the duty rates, freight rates, and exchange rates in effect at the time of quotation — changes to any of these factors may affect final delivered pricing.<br><br>
-        Delivery terms are as specified above. All applicable duties and customs fees are included in the quoted DDP price and are based on the HTS codes and tariff rates noted in this quotation. This quotation does not constitute a binding contract. A purchase order from the client and written acceptance from IPS is required to confirm an order. Production lead times begin upon receipt of confirmed deposit per payment terms above.<br><br>
-        All product designs, tooling, and specifications developed by IPS remain the property of IPS until paid in full by the client. IPS acts as a sourcing and manufacturing agent. Final product quality is subject to the manufacturing standards agreed upon in the product specification sheet. IPS is not liable for delays caused by force majeure, customs holds, carrier delays, or circumstances beyond our reasonable control.
+        <strong style="color:#555;font-size:10px;display:block;margin-bottom:3px;">1. QUOTATION VALIDITY</strong>
+        This quotation is valid for <span id="qp-validity-text">30</span> days from the date of issue. All prices are quoted in USD. After expiry, pricing must be reconfirmed in writing by IPS before any order is placed. IPS reserves the right to revise pricing at any time prior to written order confirmation.
+        <br><br>
+        <strong style="color:#555;font-size:10px;display:block;margin-bottom:3px;">2. PRICING & TARIFFS</strong>
+        All pricing is based on duty rates, freight rates, currency exchange rates, and applicable tariffs in effect at the time of quotation. Should any of these factors change — including but not limited to changes in US import tariffs, Section 301 duties, IEEPA executive tariffs, or ocean freight rates — IPS reserves the right to adjust pricing accordingly prior to or upon order confirmation. IPS will notify the buyer of any material changes before proceeding.
+        <br><br>
+        <strong style="color:#555;font-size:10px;display:block;margin-bottom:3px;">3. DELIVERY TERMS</strong>
+        Delivery terms are as specified on this quotation. Duties, freight, and customs responsibilities are allocated between IPS and the buyer as described under the applicable Incoterm. All delivery timelines are estimates and are subject to manufacturing lead times, port conditions, and carrier availability.
+        <br><br>
+        <strong style="color:#555;font-size:10px;display:block;margin-bottom:3px;">4. ORDER CONFIRMATION</strong>
+        This quotation does not constitute a binding agreement. A formal purchase order from the buyer and written acceptance from International Product Solutions, Inc. is required to confirm an order. Production lead times begin upon receipt of the confirmed deposit as specified in the payment terms above. IPS is not responsible for delays resulting from late deposit payments.
+        <br><br>
+        <strong style="color:#555;font-size:10px;display:block;margin-bottom:3px;">5. TOOLING & INTELLECTUAL PROPERTY</strong>
+        Any tooling, molds, dies, or fixtures developed by IPS on behalf of the buyer remain the property of IPS until full payment has been received. Product designs, specifications, and proprietary processes shared with IPS remain the intellectual property of the buyer and will be held in confidence. IPS will not share buyer designs with third parties without written consent.
+        <br><br>
+        <strong style="color:#555;font-size:10px;display:block;margin-bottom:3px;">6. ROLE OF IPS</strong>
+        International Product Solutions, Inc. acts as a sourcing and supply chain management agent. IPS manages factory relationships, quality oversight, logistics, and import compliance on behalf of the buyer. Final product quality is governed by the product specification sheet and quality standards agreed upon in writing prior to production.
+        <br><br>
+        <strong style="color:#555;font-size:10px;display:block;margin-bottom:3px;">7. FORCE MAJEURE</strong>
+        IPS shall not be liable for delays or failure to perform resulting from causes beyond its reasonable control, including but not limited to acts of God, labor disputes, port congestion, customs holds, government actions, pandemics, natural disasters, or carrier delays.
+        <br><br>
+        <strong style="color:#555;font-size:10px;display:block;margin-bottom:3px;">8. GOVERNING LAW</strong>
+        This quotation and any resulting agreement shall be governed by and construed in accordance with the laws of the Commonwealth of Massachusetts, United States of America, without regard to conflict of law principles.
       </div>
     </div>
 
@@ -1371,8 +1407,47 @@ function addPriceBreak(qty='',margin=''){
 }
 function removePriceBreak(id){const el=$('pb-'+id);if(el)el.remove();pbRows=pbRows.filter(r=>r!==id);updateQuotePreview();}
 function getPriceBreaks(){return pbRows.map(id=>{const q=$('pb-qty-'+id),m=$('pb-m-'+id);if(!q||!m)return null;return{qty:num(q.value),margin:num(m.value)};}).filter(r=>r&&r.qty>0&&r.margin>0);}
-function autoFillBreaks(){pbRows.forEach(id=>{const el=$('pb-'+id);if(el)el.remove();});pbRows=[];const m=num($('q-margin').value)||35;const u20=num($('fcl20_units').value),u40=num($('fcl40_units').value),u40hc=num($('fcl40hc_units').value);if(u20>0)addPriceBreak(u20,m);if(u40>0)addPriceBreak(u40,m);if(u40hc>0)addPriceBreak(u40hc,m);if(pbRows.length===0)addPriceBreak('','');updateQuotePreview();}
+function autoFillBreaks(){
+  pbRows.forEach(id=>{const el=$('pb-'+id);if(el)el.remove();});
+  pbRows=[];
+  const m=num($('q-margin').value)||35;
+  const orderQty=num($('order_qty').value)||1;
+  // Use known packout if entered, otherwise fall back to estimated from packaging
+  const pkg=estimatePackaging();
+  const est20=pkg?pkg.container.units20:0;
+  const est40=pkg?pkg.container.units40:0;
+  const k20=num($('known_20ft').value);
+  const k40=num($('known_40ft').value);
+  const k40hc=num($('known_40hc').value);
+  // Actual units used = min(order qty, container capacity)
+  const u20=k20||(est20||0);
+  const u40=k40||(est40||0);
+  const u40hc=k40hc||(est40||0);
+  if(num($('fcl20_cost').value)>0&&u20>0) addPriceBreak(Math.min(orderQty,u20),m);
+  if(num($('fcl40_cost').value)>0&&u40>0&&u40!==u20) addPriceBreak(Math.min(orderQty,u40),m);
+  if(num($('fcl40hc_cost').value)>0&&u40hc>0&&u40hc!==u40&&u40hc!==u20) addPriceBreak(Math.min(orderQty,u40hc),m);
+  if(pbRows.length===0) addPriceBreak('','');
+  updateQuotePreview();
+}
 function toggleCustomPayment(){$('custom-payment-field').style.display=$('q-payment').value==='custom'?'':'none';updateQuotePreview();}
+
+// Delivery term descriptions
+const DELIVERY_DESCS = {
+  'DDP': 'All import duties, customs fees, freight, and delivery costs are included in the quoted price. Goods will be delivered to your specified destination with no additional import costs or customs responsibilities for the buyer.',
+  'DAP': 'Ocean freight and delivery to the named destination is included. Import duties, customs clearance fees, and any applicable taxes upon arrival are the responsibility of the buyer.',
+  'CIF': 'Cost of goods, marine insurance, and ocean freight to the named destination port are included. Import duties, customs clearance, and inland delivery from the port are the responsibility of the buyer.',
+  'FOB Factory': 'Goods are prepared and made available at the origin factory or port of export. All ocean freight, marine insurance, import duties, customs clearance, and inland delivery are the responsibility of the buyer from that point forward.'
+};
+
+function updateDeliveryDesc(){
+  const terms=$('q-terms')?.value||'DDP';
+  const desc=DELIVERY_DESCS[terms]||'';
+  const el=$('q-terms-desc');
+  if(el) el.textContent=desc;
+  // Also update quote preview delivery term note
+  const qpNote=$('qp-terms-desc');
+  if(qpNote) qpNote.textContent=desc;
+}
 
 // ── Image handling ───────────────────────────────────────────────────────────
 const imgData=[null,null,null]; // base64 data for each slot
@@ -1751,7 +1826,9 @@ function printQuote(){
     .qp-duty-note{font-size:10px;color:#888;margin-top:8px;font-style:italic;padding:8px 10px;background:#fafafa;border-left:2px solid #d0d0d0;}
     .qp-tc{padding:12px 28px;break-inside:avoid;}
     .qp-tc-title{font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#aaa;margin-bottom:8px;}
-    .qp-tc-text{font-size:10px;color:#888;line-height:1.6;}
+    .qp-tc-text{font-size:10px;color:#666;line-height:1.6;}
+  .qp-tc-text strong{color:#333;font-size:9px;letter-spacing:0.08em;display:block;margin-top:8px;margin-bottom:2px;}
+  .qp-terms-desc{font-size:11px;color:#666;line-height:1.6;font-style:italic;}
     .qp-footer{background:#f8f8f8!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:10px 28px;display:flex;justify-content:space-between;border-top:1px solid #e0e0e0;flex-wrap:wrap;gap:4px;}
     .qp-footer-item{font-size:10px;color:#aaa;}
     .qp-footer-item span{color:#555;font-weight:600;}
@@ -1904,7 +1981,23 @@ function updateQuotePreview(){
   if(qdate){const exp=new Date(qdate+'T00:00:00');exp.setDate(exp.getDate()+validity);$('qp-expiry').textContent=`Valid until ${exp.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`;}
   else{$('qp-expiry').textContent=`Valid for ${validity} days from issue`;}
   $('qp-validity-text').textContent=validity;
-  set('qp-customer',$('customer').value||'—');set('qp-terms',$('q-terms').value||'DDP');set('qp-dest',$('destination').value||'—');set('qp-payment',payment||'—');
+  // Delivery terms
+  const termsVal=$('q-terms')?.value||'DDP';
+  const termsShort=termsVal.split('—')[0].trim();
+  set('qp-customer',$('customer').value||'—');
+  set('qp-terms',termsVal);
+  set('qp-dest',$('destination').value||'—');
+  set('qp-payment',payment||'—');
+  // Valid until
+  const vulEl=$('qp-valid-until');
+  if(vulEl){
+    const qdate=$('q-date').value;
+    const val2=num($('q-validity').value)||30;
+    if(qdate){const exp=new Date(qdate+'T00:00:00');exp.setDate(exp.getDate()+val2);vulEl.textContent=exp.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});}
+    else{vulEl.textContent=val2+' days from issue';}
+  }
+  // Delivery description
+  updateDeliveryDesc();
   set('qp-desc',$('description').value||'—');set('qp-sku',$('sku').value||'—');set('qp-origin',$('origin_country').value||'—');set('qp-dest2',$('destination').value||'—');
   set('qp-preparer',$('q-preparer').value||'IPS');
 
@@ -2193,6 +2286,7 @@ function loadTestDefaults(){
 
 document.querySelectorAll('input:not([type=radio]):not([type=file]), select, textarea').forEach(el=>{el.addEventListener('input',()=>{calculate();updateQuotePreview();});el.addEventListener('change',()=>{calculate();updateQuotePreview();});});
 $('q-date').value=today();
+updateDeliveryDesc();
 // Auto-suggest quote number on load
 (()=>{
   const dateCode=getDateCode();
