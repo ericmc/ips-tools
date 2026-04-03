@@ -235,6 +235,13 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
         <div class="field"><label>Final Destination</label><div class="select-wrap"><select id="destination"><option value="">— Select —</option><option>Los Angeles, CA</option><option>Long Beach, CA</option><option>New York, NY</option><option>Seattle, WA</option><option>Chicago, IL</option><option>Houston, TX</option><option>Savannah, GA</option><option>Norfolk, VA</option><option>Other</option></select><span class="select-arrow">▼</span></div></div>
         <div class="field"><label>Order Quantity</label><div class="input-wrap"><input type="number" id="order_qty" step="1" oninput="updateLclCbm()" /></div><span class="hint">Total units this PO</span></div>
       </div>
+      <!-- Product Details multiline -->
+      <div style="padding:10px 0 4px;">
+        <div class="field">
+          <label>Product Details <span style="font-weight:400;color:#bbb;text-transform:none;letter-spacing:0;font-size:9px;">— specs, colors, materials, notes (appears on quote)</span></label>
+          <textarea id="product_details" rows="4" oninput="updateQuotePreview()" style="width:100%;padding:8px 10px;border:1px solid #c8c8c8;font-family:'Archivo',sans-serif;font-size:13px;color:#111;resize:vertical;outline:none;line-height:1.5;" placeholder="e.g. Color: Black&#10;Material: ABS Plastic&#10;Retail packaging: Window box&#10;Certifications: CE, RoHS"></textarea>
+        </div>
+      </div>
     </div></div>
 
     <div class="card"><div class="card-inner">
@@ -730,6 +737,11 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
       </div>
     </div>
 
+    <div class="qp-section" id="qp-details-section" style="display:none;">
+      <div class="qp-section-title">Product Details</div>
+      <div id="qp-details-text" style="font-size:12px;color:#333;line-height:1.7;white-space:pre-wrap;font-family:'Archivo',sans-serif;"></div>
+    </div>
+
     <div class="qp-section">
       <div class="qp-section-title">Pricing — DDP Delivered</div>
       <table class="qp-price-table">
@@ -935,6 +947,12 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
       </div>
     </div>
   </div><!-- /cs-header-block -->
+
+    <!-- Product Details section — shown only if filled in -->
+    <div class="cs-section" id="csp-product-details-section" style="display:none;">
+      <div class="cs-section-head">Product Details</div>
+      <div style="padding:8px 10px;font-size:11px;color:#333;line-height:1.6;white-space:pre-wrap;font-family:'Archivo',sans-serif;" id="csp-product-details"></div>
+    </div>
 
     <!-- Row 1: Customer & Product + Input Summary side by side -->
     <div class="cs-two-col">
@@ -1306,7 +1324,7 @@ function calculate(){
 
 // Save / Load
 function collectState(){
-  const ids=['customer','sku','description','origin_country','destination','order_qty','dim_l','dim_w','dim_h','weight','inner_pack','fob','mgmt_fee_pct','inspection','other_origin','tooling','tooling_units','lcl_cbm','lcl_rate','lcl_units','fcl20_cost','fcl40_cost','fcl40_units','fcl40hc_cost','fcl40hc_units','known_20ft','known_40ft','known_40hc','pallet_max_h','pallet_type','insurance','img-label-0','img-label-1','img-label-2','duty_rate','sec301','ieepa','mpf','hmf','broker','inland','warehouse','other_dest','target_margin','target_retail'];
+  const ids=['customer','sku','description','origin_country','destination','order_qty','dim_l','dim_w','dim_h','weight','inner_pack','fob','mgmt_fee_pct','inspection','other_origin','tooling','tooling_units','lcl_cbm','lcl_rate','lcl_units','fcl20_cost','fcl40_cost','fcl40_units','fcl40hc_cost','fcl40hc_units','known_20ft','known_40ft','known_40hc','pallet_max_h','pallet_type','insurance','img-label-0','img-label-1','img-label-2','product_details','duty_rate','sec301','ieepa','mpf','hmf','broker','inland','warehouse','other_dest','target_margin','target_retail'];
   const state={};ids.forEach(id=>{const el=$(id);if(el)state[id]=el.value;});
   state.tooling_mode=document.querySelector('input[name=tooling_mode]:checked').value;
   state.savedAt=new Date().toISOString();
@@ -1483,6 +1501,14 @@ function populateCostSheetPrint(){
   $('csp-qty').textContent=orderQty.toLocaleString()+' units';
   $('csp-origin').textContent=$('origin_country').value||'—';
   $('csp-dest').textContent=$('destination').value||'—';
+  // Product details on cost sheet
+  const pdEl=$('csp-product-details');
+  const pdVal=$('product_details')?.value?.trim()||'';
+  if(pdEl){
+    pdEl.textContent=pdVal;
+    const pdSection=$('csp-product-details-section');
+    if(pdSection)pdSection.style.display=pdVal?'':'none';
+  }
 
   // Cost breakdown
   $('csp-fob').textContent=fmt(r.fob);
@@ -1816,11 +1842,11 @@ function showQuoteLog(){
       tr.style.background=i%2===0?'#fff':'#fafafa';
       const saved=entry.savedAt?new Date(entry.savedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
       tr.innerHTML=
-        '<td style="padding:7px 12px;font-family:'Roboto Mono',monospace;font-size:12px;font-weight:700;border-bottom:1px solid #f0f0f0;">'+( entry.num||'—')+'</td>'+
+        '<td style="padding:7px 12px;font-family:monospace;font-size:12px;font-weight:700;border-bottom:1px solid #f0f0f0;">'+( entry.num||'—')+'</td>'+
         '<td style="padding:7px 12px;font-size:12px;border-bottom:1px solid #f0f0f0;">'+(entry.customer||'—')+'</td>'+
         '<td style="padding:7px 12px;font-size:12px;border-bottom:1px solid #f0f0f0;">'+(entry.description||'—')+'</td>'+
-        '<td style="padding:7px 12px;font-family:'Roboto Mono',monospace;font-size:11px;color:#888;border-bottom:1px solid #f0f0f0;">'+(entry.date||'—')+'</td>'+
-        '<td style="padding:7px 12px;font-family:'Roboto Mono',monospace;font-size:10px;color:#aaa;border-bottom:1px solid #f0f0f0;">'+saved+'</td>';
+        '<td style="padding:7px 12px;font-family:monospace;font-size:11px;color:#888;border-bottom:1px solid #f0f0f0;">'+(entry.date||'—')+'</td>'+
+        '<td style="padding:7px 12px;font-family:monospace;font-size:10px;color:#aaa;border-bottom:1px solid #f0f0f0;">'+saved+'</td>';
       body.appendChild(tr);
     });
   }
@@ -1881,6 +1907,14 @@ function updateQuotePreview(){
   set('qp-customer',$('customer').value||'—');set('qp-terms',$('q-terms').value||'DDP');set('qp-dest',$('destination').value||'—');set('qp-payment',payment||'—');
   set('qp-desc',$('description').value||'—');set('qp-sku',$('sku').value||'—');set('qp-origin',$('origin_country').value||'—');set('qp-dest2',$('destination').value||'—');
   set('qp-preparer',$('q-preparer').value||'IPS');
+
+  // Product details
+  const details=$('product_details')?.value?.trim()||'';
+  const detailsSec=$('qp-details-section');
+  if(detailsSec){
+    if(details){detailsSec.style.display='';set('qp-details-text',details);}
+    else{detailsSec.style.display='none';}
+  }
 
   const breaks=getPriceBreaks(),tbody=$('qp-price-body');
   tbody.innerHTML='';
