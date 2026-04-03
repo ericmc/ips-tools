@@ -110,9 +110,9 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
 #ldp-value { font-family: 'Archivo Narrow', sans-serif; font-size: 52px; font-weight: 700; letter-spacing: -0.01em; line-height: 1; }
 #ldp-divider { height: 1px; background: #282828; margin: 14px 0; }
 .meta-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
-.meta-label { font-family: 'Archivo', sans-serif; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.08em; }
+.meta-label { font-family: 'Archivo', sans-serif; font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.08em; }
 .meta-val { font-family: 'Roboto Mono', monospace; font-size: 13px; color: #fff; }
-.meta-note { font-size: 9px; color: #444; font-style: italic; margin-top: 6px; padding-top: 6px; border-top: 1px solid #1a1a1a; }
+.meta-note { font-size: 9px; color: #999; font-style: italic; margin-top: 6px; padding-top: 6px; border-top: 1px solid #2a2a2a; }
 .result-card { background: #fff; border: 1px solid #d0d0d0; }
 .result-card-header { padding: 10px 14px 8px; border-bottom: 2px solid #000; font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
 .subhead { padding: 8px 14px 3px; border-top: 1px solid #e8e8e8; font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #aaa; }
@@ -499,7 +499,7 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
       <div class="meta-row"><span class="meta-label">Min Sell @ <span id="meta-margin">40</span>% GM</span><span class="meta-val" id="meta-sell">—</span></div>
       <div class="meta-row"><span class="meta-label">Effective Duty on Dutiable FOB</span><span class="meta-val" id="meta-duty">—</span></div>
       <div id="mgmt-note" class="meta-note" style="display:none">Management/agency fee excluded from duty basis. Duty computed on net FOB.</div>
-      <div id="ldp-identity" style="margin-top:10px;font-size:10px;color:#444;"></div>
+      <div id="ldp-identity" style="margin-top:10px;font-size:10px;color:#999;"></div>
     </div>
 
     <div class="result-card">
@@ -877,19 +877,19 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
     /* ── Header ── */
     .cs-header { background: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0; }
     .cs-header-title { font-family: 'Archivo Narrow', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; }
-    .cs-header-sub { font-size: 9px; color: #888; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px; }
-    .cs-doc-label { font-size: 9px; color: #666; letter-spacing: 0.14em; text-transform: uppercase; text-align: right; }
+    .cs-header-sub { font-size: 9px; color: #bbb; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px; }
+    .cs-doc-label { font-size: 9px; color: #aaa; letter-spacing: 0.14em; text-transform: uppercase; text-align: right; }
     .cs-doc-date { font-family: 'Roboto Mono', monospace; font-size: 11px; color: #fff; margin-top: 2px; text-align: right; }
-    .cs-doc-id { font-size: 9px; color: #555; margin-top: 2px; text-align: right; }
+    .cs-doc-id { font-size: 9px; color: #aaa; margin-top: 2px; text-align: right; }
 
     /* ── Hero ── */
     .cs-hero { background: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #fff; padding: 10px 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-bottom: 10px; break-inside: avoid; }
     .cs-hero-item { padding: 0 14px; border-right: 1px solid #333; }
     .cs-hero-item:first-child { padding-left: 0; }
     .cs-hero-item:last-child { border-right: none; }
-    .cs-hero-label { font-size: 8px; color: #666; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+    .cs-hero-label { font-size: 8px; color: #bbb; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
     .cs-hero-val { font-family: 'Archivo Narrow', sans-serif; font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
-    .cs-hero-sub { font-family: 'Roboto Mono', monospace; font-size: 9px; color: #888; margin-top: 2px; }
+    .cs-hero-sub { font-family: 'Roboto Mono', monospace; font-size: 9px; color: #ccc; margin-top: 2px; }
 
     /* ── Body ── */
     .cs-body { padding: 0; }
@@ -1725,16 +1725,16 @@ function printCostSheet(){
     .cs-header{break-after:avoid;page-break-after:avoid;background:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:flex-start;}
     .cs-hero{break-before:avoid;break-after:avoid;page-break-before:avoid;page-break-after:avoid;background:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#fff;padding:8px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-bottom:8px;}
     .cs-header-title{font-family:'Archivo Narrow',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#fff;}
-    .cs-header-sub{font-size:9px;color:#888;letter-spacing:0.1em;text-transform:uppercase;margin-top:3px;}
-    .cs-doc-label{font-size:9px;color:#666;letter-spacing:0.14em;text-transform:uppercase;text-align:right;}
+    .cs-header-sub{font-size:9px;color:#bbb;letter-spacing:0.1em;text-transform:uppercase;margin-top:3px;}
+    .cs-doc-label{font-size:9px;color:#aaa;letter-spacing:0.14em;text-transform:uppercase;text-align:right;}
     .cs-doc-date{font-family:'Roboto Mono',monospace;font-size:11px;color:#fff;margin-top:2px;text-align:right;}
-    .cs-doc-id{font-size:9px;color:#555;margin-top:2px;text-align:right;}
+    .cs-doc-id{font-size:9px;color:#aaa;margin-top:2px;text-align:right;}
     .cs-hero-item{padding:0 14px;border-right:1px solid #333;}
     .cs-hero-item:first-child{padding-left:0;}
     .cs-hero-item:last-child{border-right:none;}
-    .cs-hero-label{font-size:8px;color:#666;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px;}
+    .cs-hero-label{font-size:8px;color:#bbb;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px;}
     .cs-hero-val{font-family:'Archivo Narrow',sans-serif;font-size:20px;font-weight:700;color:#fff;line-height:1;}
-    .cs-hero-sub{font-family:'Roboto Mono',monospace;font-size:9px;color:#888;margin-top:2px;}
+    .cs-hero-sub{font-family:'Roboto Mono',monospace;font-size:9px;color:#ccc;margin-top:2px;}
     .cs-body{padding:0;}
     .cs-two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
     .cs-header-block{break-inside:avoid;page-break-inside:avoid;display:block;}
