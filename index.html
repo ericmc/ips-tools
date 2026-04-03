@@ -417,42 +417,48 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
       <div class="section-header"><span class="section-title">Reference Images</span><span class="section-right">Appear on Cost Sheet and optionally on Quote</span></div>
       <div class="rule-thin"></div>
       <div class="fg3" style="padding-top:12px;">
+        <!-- Image slots 0, 1, 2 — identical structure -->
         <div class="img-slot" id="img-slot-0">
-          <div class="img-slot-header">
-            <label style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#555;">Product Photo</label>
-            <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:#555;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;"><input type="checkbox" id="img-quote-0" style="accent-color:#000;" checked /> Include on quote</label>
-          </div>
-          <div class="img-upload-zone" onclick="document.getElementById('img-file-0').click()">
+          <div class="img-upload-zone" onclick="document.getElementById('img-file-0').click()" style="margin-bottom:6px;">
             <input type="file" id="img-file-0" accept="image/*" onchange="loadImage(0,this)" />
             <img id="img-prev-0" class="img-thumb" style="display:none;" />
-            <div id="img-placeholder-0" style="font-size:11px;color:#bbb;">Click to upload</div>
+            <div id="img-placeholder-0" style="font-size:11px;color:#bbb;">Image 1 — Click to upload</div>
           </div>
+          <div class="field" style="margin-bottom:4px;">
+            <label>Description <span style="font-weight:400;color:#bbb;text-transform:none;letter-spacing:0;">(optional)</span></label>
+            <div class="input-wrap"><input type="text" id="img-label-0" placeholder="e.g. Product photo, packaging, sample..." style="font-size:12px;" oninput="updateQuotePreview()" /></div>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:10px;color:#555;cursor:pointer;margin-bottom:2px;">
+            <input type="checkbox" id="img-quote-0" style="accent-color:#000;width:14px;height:14px;" checked onchange="updateQuotePreview()" /> Include on quote
+          </label>
           <button onclick="clearImage(0)" style="font-size:10px;color:#aaa;background:none;border:none;cursor:pointer;text-align:left;display:none;" id="img-clear-0">✕ Remove</button>
-        </div>
-        <div class="img-slot" id="img-slot-1">
-          <div class="img-slot-header">
-            <label style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#555;">Sample / Reference</label>
-            <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:#555;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;"><input type="checkbox" id="img-quote-1" style="accent-color:#000;" /> Include on quote</label>
-          </div>
-          <div class="img-upload-zone" onclick="document.getElementById('img-file-1').click()">
+        </div><div class="img-slot" id="img-slot-1">
+          <div class="img-upload-zone" onclick="document.getElementById('img-file-1').click()" style="margin-bottom:6px;">
             <input type="file" id="img-file-1" accept="image/*" onchange="loadImage(1,this)" />
             <img id="img-prev-1" class="img-thumb" style="display:none;" />
-            <div id="img-placeholder-1" style="font-size:11px;color:#bbb;">Click to upload</div>
+            <div id="img-placeholder-1" style="font-size:11px;color:#bbb;">Image 2 — Click to upload</div>
           </div>
+          <div class="field" style="margin-bottom:4px;">
+            <label>Description <span style="font-weight:400;color:#bbb;text-transform:none;letter-spacing:0;">(optional)</span></label>
+            <div class="input-wrap"><input type="text" id="img-label-1" placeholder="e.g. Product photo, packaging, sample..." style="font-size:12px;" oninput="updateQuotePreview()" /></div>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:10px;color:#555;cursor:pointer;margin-bottom:2px;">
+            <input type="checkbox" id="img-quote-1" style="accent-color:#000;width:14px;height:14px;"  onchange="updateQuotePreview()" /> Include on quote
+          </label>
           <button onclick="clearImage(1)" style="font-size:10px;color:#aaa;background:none;border:none;cursor:pointer;text-align:left;display:none;" id="img-clear-1">✕ Remove</button>
-        </div>
-        <div class="img-slot" id="img-slot-2">
-          <div class="img-slot-header">
-            <div class="field" style="flex:1;margin-bottom:4px;"><label style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#555;">Custom Image Label</label><div class="input-wrap"><input type="text" id="img-label-2" placeholder="e.g. Packaging" style="font-size:12px;" /></div></div>
-          </div>
-          <div style="display:flex;justify-content:flex-end;margin-bottom:4px;">
-            <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:#555;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;"><input type="checkbox" id="img-quote-2" style="accent-color:#000;" /> Include on quote</label>
-          </div>
-          <div class="img-upload-zone" onclick="document.getElementById('img-file-2').click()">
+        </div><div class="img-slot" id="img-slot-2">
+          <div class="img-upload-zone" onclick="document.getElementById('img-file-2').click()" style="margin-bottom:6px;">
             <input type="file" id="img-file-2" accept="image/*" onchange="loadImage(2,this)" />
             <img id="img-prev-2" class="img-thumb" style="display:none;" />
-            <div id="img-placeholder-2" style="font-size:11px;color:#bbb;">Click to upload</div>
+            <div id="img-placeholder-2" style="font-size:11px;color:#bbb;">Image 3 — Click to upload</div>
           </div>
+          <div class="field" style="margin-bottom:4px;">
+            <label>Description <span style="font-weight:400;color:#bbb;text-transform:none;letter-spacing:0;">(optional)</span></label>
+            <div class="input-wrap"><input type="text" id="img-label-2" placeholder="e.g. Product photo, packaging, sample..." style="font-size:12px;" oninput="updateQuotePreview()" /></div>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:10px;color:#555;cursor:pointer;margin-bottom:2px;">
+            <input type="checkbox" id="img-quote-2" style="accent-color:#000;width:14px;height:14px;"  onchange="updateQuotePreview()" /> Include on quote
+          </label>
           <button onclick="clearImage(2)" style="font-size:10px;color:#aaa;background:none;border:none;cursor:pointer;text-align:left;display:none;" id="img-clear-2">✕ Remove</button>
         </div>
       </div>
@@ -581,7 +587,15 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
     <div class="card"><div class="card-inner">
       <div class="rule-thick"></div><div class="section-header"><span class="section-title">Quote Settings</span><span class="section-right">Product data pulled from Calculator tab</span></div><div class="rule-thin"></div>
       <div class="fg2" style="padding-top:12px;">
-        <div class="field"><label>Quote Number</label><div class="input-wrap"><input type="text" id="q-num" placeholder="IPS-2026-0001" /></div><span class="hint">Use IPS-YYYY-NNNN-R1 format for revisions</span></div>
+        <div class="field">
+          <label>Quote Number</label>
+          <div style="display:flex;gap:6px;align-items:stretch;">
+            <div class="input-wrap" style="flex:1;"><input type="text" id="q-num" placeholder="IPS-040326-001" oninput="updateQuotePreview()" /></div>
+            <button onclick="autoFillQuoteNum()" style="padding:0 12px;border:1px solid #c8c8c8;background:#f8f8f8;font-family:'Archivo',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#555;cursor:pointer;white-space:nowrap;" title="Auto-fill today's date">Auto Date</button>
+          </div>
+          <div id="q-num-hint" style="font-size:10px;color:#888;margin-top:3px;font-style:italic;"></div>
+          <span class="hint">New: IPS-MMDDYY-001 &nbsp;·&nbsp; Revision: IPS-MMDDYY-001-R1</span>
+        </div>
         <div class="field"><label>Quote Date</label><div class="input-wrap"><input type="date" id="q-date" /></div></div>
         <div class="field"><label>Margin % <span style="color:#e0a800;font-size:9px;letter-spacing:0.06em;">(INTERNAL — not shown on quote)</span></label><div class="input-wrap"><input type="number" id="q-margin" step="any" placeholder="e.g. 35" oninput="updateQuotePreview()" /><span class="suf">%</span></div><span class="hint">Applied on top of LDP to compute DDP price. Never shown to client.</span></div>
         <div class="field"><label>Delivery Terms</label><div class="input-wrap"><input type="text" id="q-terms" value="DDP" /></div></div>
@@ -637,6 +651,36 @@ body { font-family: 'Archivo', sans-serif; background: #ebebeb; color: #333; min
 
     <div class="action-bar">
       <button class="btn primary" onclick="saveQuote()">Save Quote (JSON)</button>
+      <button class="btn" onclick="showQuoteLog()">Quote Log</button>
+    </div>
+  </div>
+
+  <!-- Quote Log Modal -->
+  <div id="quote-log-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#fff;width:700px;max-height:80vh;display:flex;flex-direction:column;border:1px solid #000;">
+      <div style="background:#000;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+        <span style="font-family:'Archivo Narrow',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Quote Log</span>
+        <button onclick="$('quote-log-modal').style.display='none'" style="background:transparent;border:1px solid #555;color:#fff;padding:3px 12px;cursor:pointer;font-size:11px;">Close</button>
+      </div>
+      <div style="padding:10px 20px;background:#f8f8f8;border-bottom:1px solid #e0e0e0;font-size:10px;color:#888;flex-shrink:0;">
+        Quotes saved on this device. Numbers are tracked per device — check your SharePoint LDP Scenarios folder for the full cross-device history.
+      </div>
+      <div style="overflow-y:auto;flex:1;">
+        <table style="width:100%;border-collapse:collapse;" id="quote-log-table">
+          <thead><tr style="position:sticky;top:0;background:#f0f0f0;">
+            <th style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#555;padding:8px 12px;text-align:left;border-bottom:1px solid #d0d0d0;">Quote No.</th>
+            <th style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#555;padding:8px 12px;text-align:left;border-bottom:1px solid #d0d0d0;">Customer</th>
+            <th style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#555;padding:8px 12px;text-align:left;border-bottom:1px solid #d0d0d0;">Product</th>
+            <th style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#555;padding:8px 12px;text-align:left;border-bottom:1px solid #d0d0d0;">Date</th>
+            <th style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#555;padding:8px 12px;text-align:left;border-bottom:1px solid #d0d0d0;">Saved</th>
+          </tr></thead>
+          <tbody id="quote-log-body"></tbody>
+        </table>
+        <div id="quote-log-empty" style="display:none;padding:30px;text-align:center;color:#bbb;font-style:italic;font-size:13px;">No quotes saved yet on this device.</div>
+      </div>
+      <div style="padding:10px 20px;border-top:1px solid #e0e0e0;display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;">
+        <button onclick="clearQuoteLog()" style="font-size:11px;color:#999;background:none;border:1px solid #d0d0d0;padding:5px 12px;cursor:pointer;">Clear Log</button>
+      </div>
     </div>
   </div>
 
@@ -1262,7 +1306,7 @@ function calculate(){
 
 // Save / Load
 function collectState(){
-  const ids=['customer','sku','description','origin_country','destination','order_qty','dim_l','dim_w','dim_h','weight','inner_pack','fob','mgmt_fee_pct','inspection','other_origin','tooling','tooling_units','lcl_cbm','lcl_rate','lcl_units','fcl20_cost','fcl40_cost','fcl40_units','fcl40hc_cost','fcl40hc_units','known_20ft','known_40ft','known_40hc','pallet_max_h','pallet_type','insurance','duty_rate','sec301','ieepa','mpf','hmf','broker','inland','warehouse','other_dest','target_margin','target_retail'];
+  const ids=['customer','sku','description','origin_country','destination','order_qty','dim_l','dim_w','dim_h','weight','inner_pack','fob','mgmt_fee_pct','inspection','other_origin','tooling','tooling_units','lcl_cbm','lcl_rate','lcl_units','fcl20_cost','fcl40_cost','fcl40_units','fcl40hc_cost','fcl40hc_units','known_20ft','known_40ft','known_40hc','pallet_max_h','pallet_type','insurance','img-label-0','img-label-1','img-label-2','duty_rate','sec301','ieepa','mpf','hmf','broker','inland','warehouse','other_dest','target_margin','target_retail'];
   const state={};ids.forEach(id=>{const el=$(id);if(el)state[id]=el.value;});
   state.tooling_mode=document.querySelector('input[name=tooling_mode]:checked').value;
   state.savedAt=new Date().toISOString();
@@ -1314,7 +1358,11 @@ function toggleCustomPayment(){$('custom-payment-field').style.display=$('q-paym
 
 // ── Image handling ───────────────────────────────────────────────────────────
 const imgData=[null,null,null]; // base64 data for each slot
-const imgLabels=['Product Photo','Sample / Reference','Custom Image'];
+
+function getImgLabel(idx){
+  const desc=$('img-label-'+idx)?.value?.trim();
+  return desc || ('Image '+(idx+1));
+}
 
 function loadImage(idx,input){
   const file=input.files[0];if(!file)return;
@@ -1359,7 +1407,7 @@ function renderImagesGrid(containerId, quoteOnly){
   imgData.forEach((data,idx)=>{
     if(!data)return;
     if(quoteOnly&&!$('img-quote-'+idx)?.checked)return;
-    const label=idx===2?($('img-label-2')?.value||'Image 3'):imgLabels[idx];
+    const label=getImgLabel(idx);
     const div=document.createElement('div');
     div.style.cssText='display:flex;flex-direction:column;gap:4px;';
     div.innerHTML='<div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#aaa;">'+label+'</div>'+
@@ -1550,7 +1598,7 @@ function populateCostSheetPrint(){
     imgGrid.innerHTML='';
     imgData.forEach((d,i)=>{
       if(!d)return;
-      const label=i===2?($('img-label-2')?.value||'Image 3'):imgLabels[i];
+      const label=getImgLabel(i);
       const div=document.createElement('div');div.className='cs-img-item';
       div.innerHTML='<div class="cs-img-label">'+label+'</div><img src="'+d+'" />';
       imgGrid.appendChild(div);
@@ -1710,6 +1758,97 @@ function printQuote(){
   }, 1000);
 }
 
+// ── Quote number helpers ─────────────────────────────────────────────────────
+
+function getDateCode(){
+  const d=new Date();
+  const mm=String(d.getMonth()+1).padStart(2,'0');
+  const dd=String(d.getDate()).padStart(2,'0');
+  const yy=String(d.getFullYear()).slice(-2);
+  return mm+dd+yy;
+}
+
+function autoFillQuoteNum(){
+  const dateCode=getDateCode();
+  const base='IPS-'+dateCode+'-';
+  // Check localStorage for last used number for today
+  const key='ips_quote_last_'+dateCode;
+  const last=parseInt(localStorage.getItem(key)||'0');
+  const next=String(last+1).padStart(3,'0');
+  const suggested=base+next;
+  $('q-num').value=suggested;
+  showQuoteNumHint(dateCode, last+1);
+  updateQuotePreview();
+}
+
+function showQuoteNumHint(dateCode, num){
+  const el=$('q-num-hint');
+  if(!el)return;
+  const base='IPS-'+dateCode+'-';
+  const nextNum=String(num+1).padStart(3,'0');
+  el.textContent='Next available: '+base+nextNum+' · Revision example: '+base+String(num).padStart(3,'0')+'-R1';
+}
+
+function recordQuoteNumber(qnum){
+  // Store in localStorage so next quote auto-increments
+  if(!qnum)return;
+  const match=qnum.match(/IPS-(\d{6})-(\d{3})/);
+  if(!match)return;
+  const dateCode=match[1];
+  const num=parseInt(match[2]);
+  const key='ips_quote_last_'+dateCode;
+  const last=parseInt(localStorage.getItem(key)||'0');
+  if(num>last) localStorage.setItem(key, String(num));
+}
+
+// ── Quote log display ────────────────────────────────────────────────────────
+function showQuoteLog(){
+  const log=JSON.parse(localStorage.getItem('ips_quote_log')||'[]');
+  const body=$('quote-log-body');
+  const empty=$('quote-log-empty');
+  body.innerHTML='';
+  if(log.length===0){
+    empty.style.display='';
+  } else {
+    empty.style.display='none';
+    log.forEach((entry,i)=>{
+      const tr=document.createElement('tr');
+      tr.style.background=i%2===0?'#fff':'#fafafa';
+      const saved=entry.savedAt?new Date(entry.savedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+      tr.innerHTML=
+        '<td style="padding:7px 12px;font-family:'Roboto Mono',monospace;font-size:12px;font-weight:700;border-bottom:1px solid #f0f0f0;">'+( entry.num||'—')+'</td>'+
+        '<td style="padding:7px 12px;font-size:12px;border-bottom:1px solid #f0f0f0;">'+(entry.customer||'—')+'</td>'+
+        '<td style="padding:7px 12px;font-size:12px;border-bottom:1px solid #f0f0f0;">'+(entry.description||'—')+'</td>'+
+        '<td style="padding:7px 12px;font-family:'Roboto Mono',monospace;font-size:11px;color:#888;border-bottom:1px solid #f0f0f0;">'+(entry.date||'—')+'</td>'+
+        '<td style="padding:7px 12px;font-family:'Roboto Mono',monospace;font-size:10px;color:#aaa;border-bottom:1px solid #f0f0f0;">'+saved+'</td>';
+      body.appendChild(tr);
+    });
+  }
+  $('quote-log-modal').style.display='flex';
+}
+
+function clearQuoteLog(){
+  if(!confirm('Clear the quote log on this device? This cannot be undone.'))return;
+  localStorage.removeItem('ips_quote_log');
+  showQuoteLog();
+}
+
+// ── Quote log ────────────────────────────────────────────────────────────────
+function appendToQuoteLog(state){
+  // Maintain a running log of saved quotes in localStorage
+  const log=JSON.parse(localStorage.getItem('ips_quote_log')||'[]');
+  log.unshift({
+    num: state.quote?.num||'',
+    customer: state.customer||'',
+    description: state.description||'',
+    date: state.quote?.date||new Date().toISOString().split('T')[0],
+    savedAt: new Date().toISOString()
+  });
+  // Keep last 200 entries
+  if(log.length>200)log.splice(200);
+  localStorage.setItem('ips_quote_log', JSON.stringify(log));
+}
+
 function saveQuote(){
   const state=collectState();
   state.quote={num:$('q-num').value,date:$('q-date').value,margin:$('q-margin').value,terms:$('q-terms').value,payment:$('q-payment').value==='custom'?$('q-payment-custom').value:$('q-payment').value,validity:$('q-validity').value,preparer:$('q-preparer').value,notes:$('q-notes').value,priceBreaks:getPriceBreaks()};
@@ -1723,6 +1862,9 @@ function saveQuote(){
   const chosen=window.prompt('Save quote as — edit filename if needed (no extension required):', suggested);
   if(chosen===null) return; // user cancelled
   const filename=(chosen.trim()||suggested)+'.json';
+  // Record quote number for auto-increment
+  recordQuoteNumber(state.quote?.num||'');
+  appendToQuoteLog(state);
   const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();URL.revokeObjectURL(a.href);
 }
@@ -1798,7 +1940,9 @@ function updateQuotePreview(){
     imgData.forEach((d,i)=>{
       if(!d||!$('img-quote-'+i)?.checked)return;
       const img=document.createElement('img');
-      img.src=d;img.style.cssText='width:48px;height:48px;object-fit:cover;border:1px solid #333;margin-left:6px;';
+      img.src=d;
+      img.title=getImgLabel(i);
+      img.style.cssText='width:48px;height:48px;object-fit:cover;border:1px solid #333;margin-left:6px;';
       thumbArea.appendChild(img);
     });
   }
@@ -2015,6 +2159,15 @@ function loadTestDefaults(){
 
 document.querySelectorAll('input:not([type=radio]):not([type=file]), select, textarea').forEach(el=>{el.addEventListener('input',()=>{calculate();updateQuotePreview();});el.addEventListener('change',()=>{calculate();updateQuotePreview();});});
 $('q-date').value=today();
+// Auto-suggest quote number on load
+(()=>{
+  const dateCode=getDateCode();
+  const key='ips_quote_last_'+dateCode;
+  const last=parseInt(localStorage.getItem(key)||'0');
+  const next=String(last+1).padStart(3,'0');
+  $('q-num').value='IPS-'+dateCode+'-'+next;
+  showQuoteNumHint(dateCode, last+1);
+})();
 loadTestDefaults();
 addPriceBreak();
 calculate();
